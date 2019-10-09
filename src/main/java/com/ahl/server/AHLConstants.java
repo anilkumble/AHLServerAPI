@@ -26,10 +26,12 @@ public class AHLConstants {
   public static final String TEAM_CREATED     = "Team created successfully";
   public static final String TEAM_UPDATED     = "Team updated successfully";
   public static final String TEAM_DELETED     = "Team deleted successfully";
+  public static final String TEAM_NOT_FOUND   = "Team not found";
 
   public static final String LEAGUE_CREATED   = "League created successfully";
   public static final String LEAGUE_UPDATED   = "League updated successfully";
   public static final String LEAGUE_DELETED   = "League deleted successfully";
+  public static final String LEAGUE_NOT_FOUND = "League not found";
 
 
 
