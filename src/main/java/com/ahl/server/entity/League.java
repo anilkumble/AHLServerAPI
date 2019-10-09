@@ -5,26 +5,18 @@ import com.ahl.server.exception.InSufficientDataException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.StringJoiner;
+
+@Document(collection = "leagues")
 public class League {
 
+  @Id
   private ObjectId id;
   private String year;
-  private String slogan;
-
-  public League(String year, String slogan) {
-    this.year = year;
-    this.slogan = slogan;
-  }
-
-  public static boolean validateLeague(League league) throws InSufficientDataException {
-
-    if (!ObjectUtils.allNotNull(league.getYear())) {
-      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS);
-    }
-    return true;
-  }
-
+  private String tagline;
 
   public String getYear() {
     return year;
@@ -34,11 +26,30 @@ public class League {
     this.year = year;
   }
 
-  public String getSlogan() {
-    return slogan;
+  public String getTagline() {
+    return tagline;
   }
 
-  public void setSlogan(String slogan) {
-    this.slogan = slogan;
+  public void setTagline(String tagline) {
+    this.tagline = tagline;
+  }
+
+  public static boolean validateLeague(League league) throws InSufficientDataException {
+
+    if (!ObjectUtils.allNotNull(league.getYear(),
+        league.getTagline()
+    )) {
+      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS);
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", League.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("year='" + year + "'")
+        .add("tagline='" + tagline + "'")
+        .toString();
   }
 }

@@ -106,13 +106,18 @@ public class Player {
     return AHLUtils.isValidEmailAddress(player.getEmailId());
   }
 
-
   @Override
   public String toString() {
     return new StringJoiner(", ", Player.class.getSimpleName() + "[", "]")
         .add("id=" + id)
         .add("name='" + name + "'")
+        .add("department='" + department + "'")
+        .add("position='" + position + "'")
         .add("emailId='" + emailId + "'")
+        .add("age=" + age)
+        .add("graduatedYear=" + graduatedYear)
+        .add("phoneNo=" + phoneNo)
+        .add("teamDetails=" + teamDetails)
         .toString();
   }
 }
