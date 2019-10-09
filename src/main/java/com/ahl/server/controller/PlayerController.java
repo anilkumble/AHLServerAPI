@@ -12,6 +12,7 @@ import com.ahl.server.repository.PlayerRepository;
 import com.ahl.server.repository.TeamRepository;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -71,7 +73,7 @@ public class PlayerController {
     }
   }
 
-  @PutMapping(path="player/{emailId}")
+  @PutMapping(path="/player/{emailId}")
   public ResponseEntity<String> editPlayer(@RequestBody Player player, @PathVariable String emailId){
     JsonObject response = new JsonObject();
     Player oldPlayer = this.playerRepository.findFirstByEmailId(emailId);
@@ -83,8 +85,15 @@ public class PlayerController {
       oldPlayer.setDepartment(player.getDepartment());
       oldPlayer.setPhoneNo(player.getPhoneNo());
       oldPlayer.setPosition(player.getPosition());
-      oldPlayer.getTeamDetails().add(player.getTeamDetails().get(0));
-
+      if(player.getTeamDetails()!=null) {
+        oldPlayer.getTeamDetails().add(player.getTeamDetails().get(0));
+      }
+      try {
+        Player.validatePlayer(oldPlayer);
+      }catch (Exception ex){
+        response.addProperty(AHLConstants.ERROR,ex.getMessage());
+        return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+      }
       this.playerRepository.save(oldPlayer);
       response.addProperty(AHLConstants.SUCCESS, AHLConstants.PLAYER_UPDATED);
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.OK);
@@ -95,7 +104,7 @@ public class PlayerController {
     }
   }
 
-  @DeleteMapping(path="player/{emailId}")
+  @DeleteMapping(path="/player/{emailId}")
   public ResponseEntity<String> deletePlayer(@PathVariable String emailId){
     JsonObject response = new JsonObject();
     Player oldPlayer = this.playerRepository.findFirstByEmailId(emailId);
