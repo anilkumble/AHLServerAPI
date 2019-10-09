@@ -48,6 +48,12 @@ public class PlayerController {
     return playerRepository.findAll();
   }
 
+  @GetMapping("/playersByLeagueId")
+  public List<Player> getAllPlayersByLeagueId(@RequestParam String leagueId){
+    return playerRepository.findPlayersByLeagueId(new ObjectId(leagueId));
+  }
+
+
   @PostMapping(path = "/player")
   public ResponseEntity<String> addPlayer(@RequestBody Player player){
     JsonObject response = new JsonObject();
