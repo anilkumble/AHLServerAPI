@@ -2,14 +2,15 @@ package com.ahl.server.entity;
 
 
 import com.ahl.server.AHLConstants;
+import com.ahl.server.AHLUtils;
 import com.ahl.server.exception.InSufficientDataException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.util.MultiValueMap;
 
+import java.util.List;
 import java.util.StringJoiner;
 
 @Document(collection = "players")
@@ -18,42 +19,102 @@ public class Player {
   @Id
   private ObjectId id;
   private String name;
-  private String email_id;
+  private String department;
+  private String position;
+  private String emailId;
+  private int age;
+  private int graduatedYear;
+  private int phoneNo;
+  private List<TeamDetail> teamDetails;
 
-  public Player(String name, String email_id) {
+  public Player(String name, String emailId) {
     this.name = name;
-    this.email_id = email_id;
-  }
-
-  public ObjectId getId() {
-    return id;
+    this.emailId = emailId;
   }
 
   public String getName() {
     return name;
   }
 
-  public String getEmail_id() {
-    return email_id;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public static boolean validatePlayer(MultiValueMap<String,String> playerData ) throws InSufficientDataException {
+  public String getDepartment() {
+    return department;
+  }
 
-    if( ObjectUtils.anyNotNull(
-        playerData.getFirst(AHLConstants.NAME),
-        playerData.getFirst(AHLConstants.EMAIL_ID)))
-    {
+  public void setDepartment(String department) {
+    this.department = department;
+  }
+
+  public String getPosition() {
+    return position;
+  }
+
+  public void setPosition(String position) {
+    this.position = position;
+  }
+
+  public int getAge() {
+    return age;
+  }
+
+  public void setAge(int age) {
+    this.age = age;
+  }
+
+  public int getGraduatedYear() {
+    return graduatedYear;
+  }
+
+  public void setGraduatedYear(int graduatedYear) {
+    this.graduatedYear = graduatedYear;
+  }
+
+  public int getPhoneNo() {
+    return phoneNo;
+  }
+
+  public void setPhoneNo(int phoneNo) {
+    this.phoneNo = phoneNo;
+  }
+
+  public String getEmailId() {
+    return emailId;
+  }
+
+  public void setEmailId(String emailId) {
+    this.emailId = emailId;
+  }
+
+  public List<TeamDetail> getTeamDetails() {
+    return teamDetails;
+  }
+
+  public void setTeamDetails(List<TeamDetail> teamDetails) {
+    this.teamDetails = teamDetails;
+  }
+
+  public static boolean validatePlayer(Player player) throws Exception {
+
+    if (!ObjectUtils.allNotNull(
+        player.getName(),
+        player.getEmailId())) {
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS);
     }
-    return true;
+    return AHLUtils.isValidEmailAddress(player.getEmailId());
   }
+
 
   @Override
   public String toString() {
     return new StringJoiner(", ", Player.class.getSimpleName() + "[", "]")
         .add("id=" + id)
         .add("name='" + name + "'")
-        .add("email_id='" + email_id + "'")
+        .add("emailId='" + emailId + "'")
         .toString();
   }
 }
+
+
