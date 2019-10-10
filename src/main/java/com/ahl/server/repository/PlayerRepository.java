@@ -14,14 +14,14 @@ public interface PlayerRepository extends MongoRepository<Player, ObjectId> {
 
   public Player findFirstByName(String name);
 
-  @Query(value = "{ 'teamDetails.leagueId' : ?0 }")
-  List<Player> findPlayersByLeagueId(ObjectId leagueId);
+  @Query(value = "{ 'teamDetails.tournamentId' : ?0 }")
+  List<Player> findPlayersByTournamentId(ObjectId tournamentId);
 
   @Query(value = "{ 'teamDetails.teamId' : ?0 }")
   List<Player> findPlayersByteamId(ObjectId teamId);
 
-  @Query(value = "{ 'teamDetails.leagueId' : ?0, 'teamDetails.teamId' : ?1 }")
-  List<Player> findPlayersByTournament(ObjectId leagueId, ObjectId teamId);
+  @Query(value = "{ 'teamDetails.tournamentId' : ?0, 'teamDetails.teamId' : ?1 }")
+  List<Player> findPlayersByournamentAndTeamId(ObjectId tournamentId, ObjectId teamId);
 
 }
 

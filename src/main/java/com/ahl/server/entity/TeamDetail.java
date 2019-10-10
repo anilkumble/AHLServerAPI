@@ -6,15 +6,16 @@ import java.util.StringJoiner;
 
 public class TeamDetail {
 
-  private ObjectId leagueId;
+  private ObjectId tournamentId;
   private ObjectId teamId;
 
-  public ObjectId getLeagueId() {
-    return leagueId;
+
+  public ObjectId getTournamentId() {
+    return tournamentId;
   }
 
-  public void setLeagueId(ObjectId leagueId) {
-    this.leagueId = leagueId;
+  public void setTournamentId(ObjectId tournamentId) {
+    this.tournamentId = tournamentId;
   }
 
   public ObjectId getTeamId() {
@@ -28,7 +29,7 @@ public class TeamDetail {
   @Override
   public String toString() {
     return new StringJoiner(", ", TeamDetail.class.getSimpleName() + "[", "]")
-        .add("leagueId=" + leagueId)
+        .add("tournamentId=" + tournamentId)
         .add("teamId=" + teamId)
         .toString();
   }

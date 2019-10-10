@@ -3,12 +3,8 @@ package com.ahl.server.controller;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
-import com.ahl.server.entity.League;
-import com.ahl.server.entity.Player;
-import com.ahl.server.entity.Team;
-import com.ahl.server.repository.LeagueRepository;
-import com.ahl.server.repository.PlayerRepository;
-import com.ahl.server.repository.TeamRepository;
+import com.ahl.server.entity.Tournament;
+import com.ahl.server.repository.TournamentRepository;
 
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
@@ -25,46 +21,46 @@ import java.util.List;
 
 @RestController()
 @RequestMapping("/api")
-public class LeagueController {
+public class TournamentController {
 
-  private LeagueRepository leagueRepository;
+  private TournamentRepository tournamentRepository;
 
-  public LeagueController(LeagueRepository leagueRepository) {
-    this.leagueRepository = leagueRepository;
+  public TournamentController(TournamentRepository tournamentRepository) {
+    this.tournamentRepository = tournamentRepository;
   }
 
-  @GetMapping("/leagues")
-  public List<League> getAllLeagues(){
-    return leagueRepository.findAll();
+  @GetMapping("/tournaments")
+  public List<Tournament> getAllTournaments(){
+    return tournamentRepository.findAll();
   }
 
-  @PostMapping(path = "/league")
-  public ResponseEntity<String> addLeague(@RequestBody League league) {
+  @PostMapping(path = "/tournaments")
+  public ResponseEntity<String> addTournament(@RequestBody Tournament tournament) {
     JsonObject response = new JsonObject();
 
     try {
-      League.validateLeague(league);
+      Tournament.validateTournament(tournament);
     }catch (Exception ex) {
       response.addProperty(AHLConstants.ERROR,ex.getMessage());
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
     }
-    this.leagueRepository.save(league);
-    response.addProperty(AHLConstants.SUCCESS, AHLConstants.LEAGUE_CREATED);
+    this.tournamentRepository.save(tournament);
+    response.addProperty(AHLConstants.SUCCESS, AHLConstants.TOURNAMENT_CREATED);
     return new ResponseEntity<String>(response.toString(),null, HttpStatus.OK);
 
   }
 
-  @DeleteMapping(path="/league/{id}")
-  public ResponseEntity<String> deleteLeague(@PathVariable ObjectId id){
+  @DeleteMapping(path="/tournament/{id}")
+  public ResponseEntity<String> deleteTournament(@PathVariable ObjectId id){
     JsonObject response = new JsonObject();
-    League league = this.leagueRepository.findFirstById(id);
-    if(league != null) {
+    Tournament tournament = this.tournamentRepository.findFirstById(id);
+    if(tournament != null) {
 
-      this.leagueRepository.delete(league);
-      response.addProperty(AHLConstants.SUCCESS, AHLConstants.LEAGUE_DELETED);
+      this.tournamentRepository.delete(tournament);
+      response.addProperty(AHLConstants.SUCCESS, AHLConstants.TOURNAMENT_DELETED);
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.OK);
     }else{
-      response.addProperty(AHLConstants.ERROR, AHLConstants.LEAGUE_NOT_FOUND);
+      response.addProperty(AHLConstants.ERROR, AHLConstants.TOURNAMENT_NOT_FOUND);
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
     }
   }

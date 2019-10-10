@@ -3,17 +3,12 @@ package com.ahl.server.controller;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
-import com.ahl.server.entity.League;
-import com.ahl.server.entity.Player;
 import com.ahl.server.entity.Team;
-import com.ahl.server.repository.PlayerRepository;
 import com.ahl.server.repository.TeamRepository;
 
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

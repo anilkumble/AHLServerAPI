@@ -8,25 +8,33 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 
-@Document(collection = "leagues")
-public class League {
+@Document(collection = "tournaments")
+public class Tournament {
 
   @Id
   private ObjectId id;
-  private String year;
+  private String season;
+  private String theme;
   private String tagline;
 
-  public String getYear() {
-    return year;
+  public String getSeason() {
+    return season;
   }
 
-  public void setYear(String year) {
-    this.year = year;
+  public void setSeason(String season) {
+    this.season = season;
+  }
+
+  public String getTheme() {
+    return theme;
+  }
+
+  public void setTheme(String theme) {
+    this.theme = theme;
   }
 
   public String getTagline() {
@@ -37,12 +45,12 @@ public class League {
     this.tagline = tagline;
   }
 
-  public static boolean validateLeague(League league) throws InSufficientDataException {
+  public static boolean validateTournament(Tournament tournament) throws InSufficientDataException {
 
-    if (!ObjectUtils.allNotNull(league.getYear(),
-        league.getTagline())) {
+    if (!ObjectUtils.allNotNull(tournament.getSeason(),
+        tournament.getTagline())) {
       Map<String, String> substitueMap = new HashMap<>();
-      substitueMap.put("fields", league.getTagline());
+      substitueMap.put("fields", tournament.getTagline());
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
     }
     return true;
@@ -50,9 +58,10 @@ public class League {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", League.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", Tournament.class.getSimpleName() + "[", "]")
         .add("id=" + id)
-        .add("year='" + year + "'")
+        .add("season='" + season + "'")
+        .add("theme='" + theme + "'")
         .add("tagline='" + tagline + "'")
         .toString();
   }

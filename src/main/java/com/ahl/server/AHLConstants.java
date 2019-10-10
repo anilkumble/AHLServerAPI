@@ -9,7 +9,7 @@ public class AHLConstants {
   public static final String GRADUATED_YEAR = "graduatedYear";
   public static final String GENDER         = "gender";
   public static final String DOB            = "dob";
-  public static final String LEAGUE_ID      = "leagueId";
+  public static final String SEASON_ID      = "seasonId";
   public static final String PLAYER_LIST    = "playerList";
 
 
@@ -28,10 +28,10 @@ public class AHLConstants {
   public static final String TEAM_DELETED     = "Team deleted successfully";
   public static final String TEAM_NOT_FOUND   = "Team not found";
 
-  public static final String LEAGUE_CREATED   = "League created successfully";
-  public static final String LEAGUE_UPDATED   = "League updated successfully";
-  public static final String LEAGUE_DELETED   = "League deleted successfully";
-  public static final String LEAGUE_NOT_FOUND = "League not found";
+  public static final String TOURNAMENT_CREATED   = "Tournament created successfully";
+  public static final String TOURNAMENT_UPDATED   = "Tournament updated successfully";
+  public static final String TOURNAMENT_DELETED   = "Tournament deleted successfully";
+  public static final String TOURNAMENT_NOT_FOUND = "Tournament not found";
 
 
 
