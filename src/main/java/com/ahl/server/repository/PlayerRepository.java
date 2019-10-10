@@ -17,6 +17,12 @@ public interface PlayerRepository extends MongoRepository<Player, ObjectId> {
   @Query(value = "{ 'teamDetails.leagueId' : ?0 }")
   List<Player> findPlayersByLeagueId(ObjectId leagueId);
 
+  @Query(value = "{ 'teamDetails.teamId' : ?0 }")
+  List<Player> findPlayersByteamId(ObjectId teamId);
+
+  @Query(value = "{ 'teamDetails.leagueId' : ?0, 'teamDetails.teamId' : ?1 }")
+  List<Player> findPlayersByTournament(ObjectId leagueId, ObjectId teamId);
+
 }
 
 

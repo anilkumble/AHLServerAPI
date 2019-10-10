@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -48,11 +49,20 @@ public class PlayerController {
     return playerRepository.findAll();
   }
 
-  @GetMapping("/playersByLeagueId")
-  public List<Player> getAllPlayersByLeagueId(@RequestParam String leagueId){
-    return playerRepository.findPlayersByLeagueId(new ObjectId(leagueId));
+  @GetMapping("/playersByLeague")
+  public List<Player> getAllPlayersByLeague(@RequestParam ObjectId leagueId){
+    return playerRepository.findPlayersByLeagueId(leagueId);
   }
 
+  @GetMapping("/playersByTeam")
+  public List<Player> getAllPlayersByTeam(@RequestParam ObjectId teamId){
+    return playerRepository.findPlayersByteamId(teamId);
+  }
+
+  @GetMapping("/playersByTournament")
+  public List<Player> getAllPlayersByTournament(@RequestParam ObjectId leagueId, @RequestParam ObjectId teamId){
+    return playerRepository.findPlayersByTournament(leagueId, teamId);
+  }
 
   @PostMapping(path = "/player")
   public ResponseEntity<String> addPlayer(@RequestBody Player player){
