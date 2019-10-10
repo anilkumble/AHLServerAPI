@@ -4,6 +4,7 @@ package com.ahl.server.controller;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
+import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Player;
 import com.ahl.server.exception.InSufficientDataException;
 import com.ahl.server.exception.InvalidDataException;
@@ -28,7 +29,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api")
@@ -73,7 +77,10 @@ public class PlayerController {
         if(!ObjectUtils.allNotNull(
             teamRepository.findFirstById( player.getTeamDetails().get(0).getTeamId()),
             leagueRepository.findFirstById( player.getTeamDetails().get(0).getLeagueId()))){
-          throw new InvalidDataException(AHLConstants.INVALID_DATA);
+
+          Map<String, String> substitueMap = new HashMap<>();
+          substitueMap.put("fields", player.getTeamDetails().toString());
+          throw new InvalidDataException(AHLConstants.INVALID_DATA, substitueMap);
         }
       }
       if(this.playerRepository.save(player) != null) {

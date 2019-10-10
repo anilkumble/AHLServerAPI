@@ -9,6 +9,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
 
 @Document(collection = "teams")
@@ -29,7 +31,9 @@ public class Team {
   public static boolean validateTeam(Team team) throws InSufficientDataException {
 
     if(! ObjectUtils.allNotNull(team.getName())) {
-      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS);
+      Map<String, String> substitueMap = new HashMap<>();
+      substitueMap.put("fields", team.getName());
+      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
     }
     return true;
   }

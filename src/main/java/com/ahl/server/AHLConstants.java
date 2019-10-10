@@ -15,8 +15,8 @@ public class AHLConstants {
 
 
   /*To throw exception*/
-  public static final String MINIMUM_REQUIRED_FIELDS = "Minimum Required Fields are {$fields}";
-  public static final String INVALID_DATA            = "Invalid data {$fields}";
+  public static final String MINIMUM_REQUIRED_FIELDS = "Minimum Required Fields are ${fields}";
+  public static final String INVALID_DATA            = "Invalid data ${fields}";
 
   public static final String PLAYER_CREATED   = "Player created successfully";
   public static final String PLAYER_UPDATED   = "Player updated successfully";

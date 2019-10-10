@@ -10,7 +10,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 @Document(collection = "players")
@@ -101,7 +104,10 @@ public class Player {
     if (!ObjectUtils.allNotNull(
         player.getName(),
         player.getEmailId())) {
-      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS);
+
+      Map<String, String> substitueMap = new HashMap<>();
+      substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.NAME, AHLConstants.EMAIL_ID}));
+      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS,substitueMap);
     }
     return AHLUtils.isValidEmailAddress(player.getEmailId());
   }

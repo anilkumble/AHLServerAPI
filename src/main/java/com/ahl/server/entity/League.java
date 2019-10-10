@@ -8,6 +8,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
 
 @Document(collection = "leagues")
@@ -37,9 +40,10 @@ public class League {
   public static boolean validateLeague(League league) throws InSufficientDataException {
 
     if (!ObjectUtils.allNotNull(league.getYear(),
-        league.getTagline()
-    )) {
-      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS);
+        league.getTagline())) {
+      Map<String, String> substitueMap = new HashMap<>();
+      substitueMap.put("fields", league.getTagline());
+      throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
     }
     return true;
   }
