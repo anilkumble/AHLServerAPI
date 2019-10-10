@@ -34,7 +34,7 @@ public class TournamentController {
     return tournamentRepository.findAll();
   }
 
-  @PostMapping(path = "/tournaments")
+  @PostMapping(path = "/tournament")
   public ResponseEntity<String> addTournament(@RequestBody Tournament tournament) {
     JsonObject response = new JsonObject();
 

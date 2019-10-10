@@ -9,7 +9,8 @@ public class AHLConstants {
   public static final String GRADUATED_YEAR = "graduatedYear";
   public static final String GENDER         = "gender";
   public static final String DOB            = "dob";
-  public static final String SEASON_ID      = "seasonId";
+  public static final String SEASON         = "season";
+  public static final String TAG_LINE       = "tagline";
   public static final String PLAYER_LIST    = "playerList";
 
 

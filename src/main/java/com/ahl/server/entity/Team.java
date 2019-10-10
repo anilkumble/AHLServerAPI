@@ -30,7 +30,7 @@ public class Team {
 
   public static boolean validateTeam(Team team) throws InSufficientDataException {
 
-    if(! ObjectUtils.allNotNull(team.getName())) {
+    if(! ObjectUtils.allNotNull(team.getName()) || ObjectUtils.isEmpty(team.getName())) {
       Map<String, String> substitueMap = new HashMap<>();
       substitueMap.put("fields", team.getName());
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);

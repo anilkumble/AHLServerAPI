@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -47,10 +48,11 @@ public class Tournament {
 
   public static boolean validateTournament(Tournament tournament) throws InSufficientDataException {
 
-    if (!ObjectUtils.allNotNull(tournament.getSeason(),
-        tournament.getTagline())) {
+    if (!ObjectUtils.allNotNull(tournament.getSeason(),tournament.getTagline())
+        || ObjectUtils.isEmpty(tournament.getSeason())
+        || ObjectUtils.isEmpty(tournament.getTagline()) ) {
       Map<String, String> substitueMap = new HashMap<>();
-      substitueMap.put("fields", tournament.getTagline());
+      substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.SEASON, AHLConstants.TAG_LINE}) );
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
     }
     return true;

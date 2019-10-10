@@ -101,9 +101,9 @@ public class Player {
 
   public static boolean validatePlayer(Player player) throws Exception {
 
-    if (!ObjectUtils.allNotNull(
-        player.getName(),
-        player.getEmailId())) {
+    if (!ObjectUtils.allNotNull(player.getName(),player.getEmailId())
+        || ObjectUtils.isEmpty(player.getName())
+        || ObjectUtils.isEmpty(player.getEmailId())) {
 
       Map<String, String> substitueMap = new HashMap<>();
       substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.NAME, AHLConstants.EMAIL_ID}));
