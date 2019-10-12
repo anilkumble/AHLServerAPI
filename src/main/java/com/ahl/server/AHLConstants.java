@@ -43,6 +43,11 @@ public class AHLConstants {
   public static final String ERROR_MSG  = "Error while persisting information";
   public static final String SUCCESS    = "success";
 
+/*For Goal */
+  public static final String GOAL_CREATED ="Goal created successfully";
+  public static final String GOAL_DELETED ="Goal deleted successfully";
+  public static final String GOAL_UPDATED ="Goal updated successfully";
+  public static final String GOAL_NOT_FOUND ="Goal not found";
 
 
 }
