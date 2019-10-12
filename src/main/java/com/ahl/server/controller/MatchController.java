@@ -39,7 +39,8 @@ public class MatchController {
 
         try {
             Match.validateMatch(match);
-            if(AHLUtils.isTeamExist(teamRepository,match.getTeam1()) && AHLUtils.isTeamExist(teamRepository,match.getTeam2()) && AHLUtils.isTournamentExist(tournamentRepository,match.getTournamentId())) {
+            if(AHLUtils.isTeamExist(teamRepository,match.getTeam1()) && AHLUtils.isTeamExist(teamRepository,match.getTeam2()) && AHLUtils.isTournamentExist(tournamentRepository,match.getTournamentId())
+            && match.getTeam2()!=match.getTeam1()) {
                 if (this.matchRepository.save(match) != null)
                 {
                     response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_CREATED);
@@ -61,14 +62,14 @@ public class MatchController {
     @RequestMapping("/matches")
     public List<Match> getAllMatches()
     {
-        return matchRepository.findAll();
+        return this.matchRepository.findAll();
     }
     @PutMapping("/match{Id}")
     public ResponseEntity<String> editMatch(@RequestBody Match match,@PathVariable ObjectId Id)
     {
         JsonObject response=new JsonObject();
         Match oldMatch=this.matchRepository.findFirstById(Id);
-        if(oldMatch!=null)
+        if(oldMatch!=null && match.getTeam1()!=match.getTeam2())
         {
             oldMatch.setResult(match.getResult());
             oldMatch.setTeam1(match.getTeam1());

@@ -10,8 +10,7 @@ import java.util.List;
 
 public interface GoalRepository extends MongoRepository<Goal, ObjectId> {
 
-
-
+    public Goal findFirstById(ObjectId goalId);
 }
 
 

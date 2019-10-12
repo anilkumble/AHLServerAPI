@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "goals")
 public class Goal {
     @Id
-    private ObjectId goalId;
+    private ObjectId id;
     private ObjectId matchId;
     private ObjectId forTeamId;
     private ObjectId againstTeamId;
@@ -42,12 +42,13 @@ public class Goal {
     public void setAgainstTeamId(ObjectId againstTeamId) {
         this.againstTeamId = againstTeamId;
     }
-    public ObjectId getGoalId() {
-        return goalId;
+
+    public ObjectId getId() {
+        return id;
     }
 
-    public void setGoalId(ObjectId goalId) {
-        this.goalId = goalId;
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     public ObjectId getMatchId() {
