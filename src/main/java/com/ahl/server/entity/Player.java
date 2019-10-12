@@ -35,6 +35,11 @@ public class Player {
     this.emailId = emailId;
   }
 
+  public ObjectId getId() {
+    return id;
+  }
+
+
   public String getName() {
     return name;
   }

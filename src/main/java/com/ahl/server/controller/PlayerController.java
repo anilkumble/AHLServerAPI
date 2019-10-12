@@ -14,6 +14,7 @@ import com.ahl.server.repository.TeamRepository;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,9 +44,10 @@ public class PlayerController {
     this.teamRepository       = teamRepository;
   }
 
-  @GetMapping("/players")
-  public List<Player> getAllPlayers(){
-    return playerRepository.findAll();
+  @GetMapping(value = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Iterable<Player> getAllPlayers(){
+    Iterable i = playerRepository.findAll();
+    return i;
   }
 
   @GetMapping("/playersByTournamentId")
@@ -91,7 +93,7 @@ public class PlayerController {
     }
   }
 
-  @PutMapping(path="/player/{emailId}")
+  @PutMapping(path="/player/{emailId}/{p}")
   public ResponseEntity<String> editPlayer(@RequestBody Player player, @PathVariable String emailId){
     JsonObject response = new JsonObject();
     Player oldPlayer = this.playerRepository.findFirstByEmailId(emailId);
