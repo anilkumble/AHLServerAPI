@@ -1,6 +1,7 @@
 package com.ahl.server.controller;
 
 
+import com.ahl.server.AHLUtils;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
@@ -126,15 +127,12 @@ public class PlayerController {
     JsonObject response = new JsonObject();
     Player oldPlayer = this.playerRepository.findFirstByEmailId(emailId);
     if(oldPlayer != null) {
-
       this.playerRepository.delete(oldPlayer);
       response.addProperty(AHLConstants.SUCCESS, AHLConstants.PLAYER_DELETED);
-
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.OK);
     }else{
       response.addProperty(AHLConstants.ERROR, AHLConstants.PLAYER_NOT_FOUND);
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
     }
   }
-
 }

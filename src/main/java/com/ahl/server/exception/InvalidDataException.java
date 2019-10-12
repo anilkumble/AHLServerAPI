@@ -8,6 +8,9 @@ public class InvalidDataException extends Exception{
 
   private String message;
 
+  public InvalidDataException(String message){
+    super(message);
+  }
   public InvalidDataException(String message, Map<String, String> substituteMap ) {
 
     if (!substituteMap.isEmpty()) {

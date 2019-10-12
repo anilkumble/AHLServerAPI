@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface PlayerRepository extends MongoRepository<Player, ObjectId> {
 
+  public Player findFirstById(ObjectId playerId);
+
   public Player findFirstByEmailId(String emailId);
 
   public Player findFirstByName(String name);
@@ -22,6 +24,7 @@ public interface PlayerRepository extends MongoRepository<Player, ObjectId> {
 
   @Query(value = "{ 'teamDetails.tournamentId' : ?0, 'teamDetails.teamId' : ?1 }")
   List<Player> findPlayersByournamentAndTeamId(ObjectId tournamentId, ObjectId teamId);
+
 
 }
 

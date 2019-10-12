@@ -15,17 +15,14 @@ public class Goal {
     private ObjectId forTeamId;
     private ObjectId againstTeamId;
     private ObjectId playerId;
-    private ObjectId leagueId;
+
 
     public static boolean validateGoal(Goal goal) {
-        if(!ObjectUtils.allNotNull(goal.getForTeamId(),goal.getAgainstTeamId(),goal.getMatchId(),goal.getPlayerId(),
-                goal.getLeagueId()) || ObjectUtils.isEmpty(goal.getAgainstTeamId()) || ObjectUtils.isEmpty(goal.getForTeamId())
-        || ObjectUtils.isEmpty(goal.getLeagueId()) || ObjectUtils.isEmpty(goal.getPlayerId()) ||  ObjectUtils.isEmpty(goal.getMatchId()))
+        if(!ObjectUtils.allNotNull(goal.getForTeamId(),goal.getAgainstTeamId(),goal.getMatchId(),goal.getPlayerId()) || ObjectUtils.isEmpty(goal.getAgainstTeamId()) || ObjectUtils.isEmpty(goal.getForTeamId())
+        || ObjectUtils.isEmpty(goal.getPlayerId()) ||  ObjectUtils.isEmpty(goal.getMatchId()))
         {
             return false;
-
         }
-
         return true;
     }
 
@@ -70,11 +67,4 @@ public class Goal {
         this.playerId = playerId;
     }
 
-    public ObjectId getLeagueId() {
-        return leagueId;
-    }
-
-    public void setLeagueId(ObjectId leagueId) {
-        this.leagueId = leagueId;
-    }
 }

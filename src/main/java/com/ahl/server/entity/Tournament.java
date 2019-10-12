@@ -26,6 +26,14 @@ public class Tournament {
     return season;
   }
 
+  public ObjectId getId() {
+    return id;
+  }
+
+  public void setId(ObjectId id) {
+    this.id = id;
+  }
+
   public void setSeason(String season) {
     this.season = season;
   }

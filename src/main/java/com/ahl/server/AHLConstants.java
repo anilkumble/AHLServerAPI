@@ -27,6 +27,10 @@ public class AHLConstants {
   /*To throw exception*/
   public static final String MINIMUM_REQUIRED_FIELDS = "Minimum Required Fields are ${fields}";
   public static final String INVALID_DATA            = "Invalid data ${fields}";
+  public static final String INVALID_PLAYER            = "Invalid Player";
+  public static final String INVALID_TEAM            = "Invalid Team";
+  public static final String INVALID_MATCH            = "Invalid Match";
+  public static final String INVALID_TOURNAMENT            = "Invalid Tournament";
 
   public static final String PLAYER_CREATED   = "Player created successfully";
   public static final String PLAYER_UPDATED   = "Player updated successfully";
@@ -43,7 +47,10 @@ public class AHLConstants {
   public static final String TOURNAMENT_DELETED   = "Tournament deleted successfully";
   public static final String TOURNAMENT_NOT_FOUND = "Tournament not found";
 
-
+  public static final String MATCH_CREATED   = "Match created successfully";
+  public static final String MATCH_UPDATED   = "Match updated successfully";
+  public static final String MATCH_DELETED   = "Match deleted successfully";
+  public static final String MATCH_NOT_FOUND = "Match not found";
 
 
   public static final String EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
