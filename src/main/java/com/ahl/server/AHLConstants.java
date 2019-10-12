@@ -13,6 +13,15 @@ public class AHLConstants {
   public static final String TAG_LINE       = "tagline";
   public static final String PLAYER_LIST    = "playerList";
 
+/*Goal*/
+
+  public static final String FORTEAMID        = "forTeamId";
+  public static final String AGAINSTTEAMID    = "againstTeamId";
+  public static final String MATCHID          = "matchID";
+  public static final String PLAYERID         = "playerId";
+  public static final String LEAGUEID         = "leagueId";
+
+
 
 
   /*To throw exception*/
