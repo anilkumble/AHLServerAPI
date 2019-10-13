@@ -4,10 +4,8 @@ package com.ahl.server.controller;
 import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Goal;
-import com.ahl.server.repository.GoalRepository;
-import com.ahl.server.repository.MatchRepository;
-import com.ahl.server.repository.PlayerRepository;
-import com.ahl.server.repository.TeamRepository;
+import com.ahl.server.entity.PlayerRelation;
+import com.ahl.server.repository.*;
 import com.google.gson.JsonObject;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,8 @@ public class GoalController {
     @Autowired
     private PlayerRepository playerRepository;
     @Autowired
+    private PlayerRelationRepository playerRelationRepository;
+    @Autowired
     private TeamRepository teamRepository;
     @Autowired
     private MatchRepository matchRepository;
@@ -33,6 +33,19 @@ public class GoalController {
     {
         this.goalRepository=goalRepository;
     }
+    @RequestMapping("/goalsByPlayerId/{id}")
+    public int getGoalsByPlayerId(@PathVariable ObjectId id)
+    {
+        List<Goal> goals=goalRepository.findAllGoalsByplayerId(id);
+        return goals.size();
+    }
+
+    @RequestMapping("/testgoal/{goal}")
+    public int test(@PathVariable Goal goal)
+    {
+        return AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(), goal.getPlayerId());
+    }
+
     @PostMapping(path = "/goal")
     public ResponseEntity<String> addGoal(@RequestBody Goal goal)
     {
@@ -40,22 +53,31 @@ public class GoalController {
         try
         {
             Goal.validateGoal(goal);
-            if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isTeamExist(teamRepository,goal.getForTeamId())
-            && AHLUtils.isTeamExist(teamRepository,goal.getAgainstTeamId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId())
-            && goal.getForTeamId().getTimestamp()!=goal.getAgainstTeamId().getTimestamp())
+            List<PlayerRelation> againstTeamIdList=playerRelationRepository.findAllPlayerinaTeam(goal.getForTeamId());
+            if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isTeamExist(teamRepository,goal.getForTeamId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId())
+            && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getAgainstTeamId()))
             {
-                if(this.goalRepository.save(goal)!=null)
+//                if(AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(),goal.getPlayerId()))
+                if(!goal.getForTeamId().equals(goal.getAgainstTeamId()))
                 {
-                    response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
-                    return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                    if(this.goalRepository.save(goal)!=null)
+                    {
+                        response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
+                        return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                    }
+                    else{
+                        response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                        return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
                 }
-                else{
+                else
+                {
                     response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
                     return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
             else {
-                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                response.addProperty(AHLConstants.ERROR,"Invalid Player/Team/Match");
                 return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -100,7 +122,7 @@ public class GoalController {
         JsonObject response=new JsonObject();
         Goal oldGoal=this.goalRepository.findFirstById(id);
         try{
-            if(oldGoal!=null && goal.getAgainstTeamId()!=goal.getForTeamId())
+            if(oldGoal!=null && !goal.getAgainstTeamId().equals(goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getAgainstTeamId()))
             {
                 oldGoal.setMatchId(goal.getMatchId());
                 oldGoal.setAgainstTeamId(goal.getAgainstTeamId());

@@ -7,4 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface MatchRepository extends MongoRepository<Match,ObjectId> {
 
     public Match findFirstById(ObjectId matchId);
+
 }

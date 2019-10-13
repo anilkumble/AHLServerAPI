@@ -31,11 +31,14 @@ public class AHLConstants {
   public static final String INVALID_TEAM            = "Invalid Team";
   public static final String INVALID_MATCH            = "Invalid Match";
   public static final String INVALID_TOURNAMENT            = "Invalid Tournament";
+  public static final String TEAM_NOT_FOUND_IN_MATCH   = "Team not found in the given match";
 
   public static final String PLAYER_CREATED   = "Player created successfully";
   public static final String PLAYER_UPDATED   = "Player updated successfully";
   public static final String PLAYER_DELETED   = "Player deleted successfully";
   public static final String PLAYER_NOT_FOUND = "Player not found";
+
+  public static final String PLAYER_RELATION_CREATED   = "Player Relation created successfully";
 
   public static final String TEAM_CREATED     = "Team created successfully";
   public static final String TEAM_UPDATED     = "Team updated successfully";

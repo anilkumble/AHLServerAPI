@@ -11,6 +11,9 @@ import java.util.List;
 public interface GoalRepository extends MongoRepository<Goal, ObjectId> {
 
     public Goal findFirstById(ObjectId goalId);
+
+    @Query(value = "{ 'playerId' : ?0}")
+    public List<Goal> findAllGoalsByplayerId(ObjectId id);
 }
 
 
