@@ -145,25 +145,58 @@ public class GoalController {
         Goal oldGoal=this.goalRepository.findFirstById(id);
         try{
             ObjectId againstTeamId=AHLUtils.getAgainstTeamId(matchRepository,goal.getMatchId(),goal.getForTeamId());
-            if(oldGoal!=null && !againstTeamId.equals(goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),againstTeamId))
-            {
-                oldGoal.setMatchId(goal.getMatchId());
-                oldGoal.setAgainstTeamId(againstTeamId);
-                oldGoal.setForTeamId(goal.getForTeamId());
-                oldGoal.setPlayerId(goal.getPlayerId());
-                if(this.goalRepository.save(oldGoal)!=null)
+            ObjectId oldagainstTeamId=AHLUtils.getAgainstTeamId(matchRepository,oldGoal.getMatchId(),oldGoal.getForTeamId());
+            if(Goal.validateGoal(goal)){
+                if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isTeamExist(teamRepository,goal.getForTeamId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId()))
                 {
-                    response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_UPDATED);
-                    return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                    if(AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(),goal.getPlayerId()))
+                    {
+                        goal.setAgainstTeamId(againstTeamId);
+                        if(AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) &&
+                                AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getAgainstTeamId()))
+                        {
+                            if(oldGoal!=null && !againstTeamId.equals(goal.getForTeamId()))
+                            {
+                                oldGoal.setMatchId(goal.getMatchId());
+                                oldGoal.setAgainstTeamId(goal.getAgainstTeamId());
+                                oldGoal.setForTeamId(goal.getForTeamId());
+                                oldGoal.setPlayerId(goal.getPlayerId());
+                                if(this.goalRepository.save(oldGoal)!=null)
+                                {
+                                    response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_UPDATED);
+                                    return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                                }
+                                else {
+                                    response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                                    return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                                }
+                            }
+                            else
+                            {
+                                response.addProperty(AHLConstants.ERROR, "Goal not found");
+                                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                            }
+
+                        }
+                        else {
+                            response.addProperty(AHLConstants.ERROR,"Team not found in Match");
+                            return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+                    }
+                    else
+                    {
+                        response.addProperty(AHLConstants.ERROR,"Player not found in team");
+                        return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
                 }
-                else {
-                    response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                else
+                {
+                    response.addProperty(AHLConstants.ERROR,"Invalid Player/Team/Match");
                     return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
-            else
-            {
-                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+            else {
+                response.addProperty(AHLConstants.ERROR, "Minimum required fields not met");
                 return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
