@@ -41,7 +41,7 @@ public class GoalController {
     }
 
     @RequestMapping("/testgoal/{goal}")
-    public int test(@PathVariable Goal goal)
+    public boolean test(@PathVariable Goal goal)
     {
         return AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(), goal.getPlayerId());
     }
@@ -52,32 +52,54 @@ public class GoalController {
         JsonObject response = new JsonObject();
         try
         {
-            Goal.validateGoal(goal);
-            List<PlayerRelation> againstTeamIdList=playerRelationRepository.findAllPlayerinaTeam(goal.getForTeamId());
-            if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isTeamExist(teamRepository,goal.getForTeamId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId())
-            && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getAgainstTeamId()))
+            if(Goal.validateGoal(goal))
             {
-//                if(AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(),goal.getPlayerId()))
-                if(!goal.getForTeamId().equals(goal.getAgainstTeamId()))
+                List<PlayerRelation> againstTeamIdList=playerRelationRepository.findAllPlayerinaTeam(goal.getForTeamId());
+                if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isTeamExist(teamRepository,goal.getForTeamId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId()))
                 {
-                    if(this.goalRepository.save(goal)!=null)
+                    if(AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(),goal.getPlayerId()))
                     {
-                        response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
-                        return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                        ObjectId againstTeamId=AHLUtils.getAgainstTeamId(matchRepository,goal.getMatchId(),goal.getForTeamId());
+                        goal.setAgainstTeamId(againstTeamId);
+                        if(AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) &&
+                                AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getAgainstTeamId()))
+                        {
+                            if(!goal.getForTeamId().equals(goal.getAgainstTeamId()))
+                            {
+                                if(this.goalRepository.save(goal)!=null)
+                                {
+                                    response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
+                                    return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                                }
+                                else{
+                                    response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                                    return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                                }
+                            }
+                            else
+                            {
+                                response.addProperty(AHLConstants.ERROR,"Both teams are equal");
+                                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                            }
+
+                        }
+                        else {
+                            response.addProperty(AHLConstants.ERROR, "Team not found in Match");
+                            return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
                     }
                     else{
-                        response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                        response.addProperty(AHLConstants.ERROR, "Player not found in team");
                         return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
                     }
                 }
-                else
-                {
-                    response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                else {
+                    response.addProperty(AHLConstants.ERROR,"Invalid Player/Team/Match");
                     return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
             else {
-                response.addProperty(AHLConstants.ERROR,"Invalid Player/Team/Match");
+                response.addProperty(AHLConstants.ERROR,"Minimum required fields not met");
                 return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -122,10 +144,11 @@ public class GoalController {
         JsonObject response=new JsonObject();
         Goal oldGoal=this.goalRepository.findFirstById(id);
         try{
-            if(oldGoal!=null && !goal.getAgainstTeamId().equals(goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getAgainstTeamId()))
+            ObjectId againstTeamId=AHLUtils.getAgainstTeamId(matchRepository,goal.getMatchId(),goal.getForTeamId());
+            if(oldGoal!=null && !againstTeamId.equals(goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),goal.getForTeamId()) && AHLUtils.isTeamExistInMatch(matchRepository,goal.getMatchId(),againstTeamId))
             {
                 oldGoal.setMatchId(goal.getMatchId());
-                oldGoal.setAgainstTeamId(goal.getAgainstTeamId());
+                oldGoal.setAgainstTeamId(againstTeamId);
                 oldGoal.setForTeamId(goal.getForTeamId());
                 oldGoal.setPlayerId(goal.getPlayerId());
                 if(this.goalRepository.save(oldGoal)!=null)

@@ -16,9 +16,16 @@ public class Goal {
     private ObjectId againstTeamId;
     private ObjectId playerId;
 
+    public ObjectId getAgainstTeamId() {
+        return againstTeamId;
+    }
+
+    public void setAgainstTeamId(ObjectId againstTeamId) {
+        this.againstTeamId = againstTeamId;
+    }
 
     public static boolean validateGoal(Goal goal) {
-        if(!ObjectUtils.allNotNull(goal.getForTeamId(),goal.getAgainstTeamId(),goal.getMatchId(),goal.getPlayerId()) || ObjectUtils.isEmpty(goal.getAgainstTeamId()) || ObjectUtils.isEmpty(goal.getForTeamId())
+        if(!ObjectUtils.allNotNull(goal.getForTeamId(),goal.getMatchId(),goal.getPlayerId()) || ObjectUtils.isEmpty(goal.getForTeamId())
         || ObjectUtils.isEmpty(goal.getPlayerId()) ||  ObjectUtils.isEmpty(goal.getMatchId()))
         {
             return false;
@@ -33,14 +40,6 @@ public class Goal {
 
     public void setForTeamId(ObjectId forTeamId) {
         this.forTeamId = forTeamId;
-    }
-
-    public ObjectId getAgainstTeamId() {
-        return againstTeamId;
-    }
-
-    public void setAgainstTeamId(ObjectId againstTeamId) {
-        this.againstTeamId = againstTeamId;
     }
 
     public ObjectId getId() {

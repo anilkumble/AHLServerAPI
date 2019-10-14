@@ -9,7 +9,7 @@ public class InvalidDataException extends Exception{
   private String message;
 
   public InvalidDataException(String message){
-    super(message);
+    this.message=message;
   }
   public InvalidDataException(String message, Map<String, String> substituteMap ) {
 
