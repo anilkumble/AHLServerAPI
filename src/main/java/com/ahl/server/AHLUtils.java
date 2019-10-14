@@ -5,10 +5,7 @@ import com.ahl.server.entity.PlayerRelation;
 import com.ahl.server.exception.InvalidDataException;
 
 import com.ahl.server.repository.*;
-import org.apache.commons.text.StringSubstitutor;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,8 +69,30 @@ public class AHLUtils {
       return false;
     }
 
-  public static int isPlayerExistInTeam(PlayerRelationRepository playerRelationRepository, ObjectId forTeamId, ObjectId playerId) {
+  public static boolean isPlayerExistInTeam(PlayerRelationRepository playerRelationRepository, ObjectId forTeamId, ObjectId playerId) {
     List<PlayerRelation> playerRelation= playerRelationRepository.isPlayerRelationExistInTeam(forTeamId,playerId);
-    return playerRelation.size();
+    return playerRelation.size() > 0;
+  }
+
+  public static ObjectId getAgainstTeamId(MatchRepository matchRepository,ObjectId matchId, ObjectId forTeamId) throws InvalidDataException {
+    Match match=matchRepository.findFirstById(matchId);
+    if(match!=null)
+    {
+      if(match.getTeam1().equals(forTeamId))
+      {
+        return match.getTeam2();
+      }
+      else if(match.getTeam2().equals(forTeamId))
+      {
+        return match.getTeam1();
+      }
+      else {
+        throw new InvalidDataException("Team is not in the match");
+      }
+    }
+    else
+    {
+      throw new InvalidDataException("Team not found");
+    }
   }
 }
