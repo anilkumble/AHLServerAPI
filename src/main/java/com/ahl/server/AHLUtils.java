@@ -1,7 +1,9 @@
 package com.ahl.server;
 
+import com.ahl.server.entity.Goal;
 import com.ahl.server.entity.Match;
 import com.ahl.server.entity.PlayerRelation;
+import com.ahl.server.entity.Team;
 import com.ahl.server.exception.InvalidDataException;
 
 import com.ahl.server.repository.*;
@@ -94,5 +96,16 @@ public class AHLUtils {
     {
       throw new InvalidDataException("Team not found");
     }
+  }
+  public static int getGoalsScoredByTeamId(GoalRepository goalRepository, ObjectId TeamId)
+  {
+    List<Goal> goals=goalRepository.findGoalsScoredByTeamId(TeamId);
+    return goals.size();
+  }
+
+  public static int getGoalsAgainstByTeamId(GoalRepository goalRepository, ObjectId TeamId)
+  {
+    List<Goal> goals=goalRepository.findGoalsAgainstByTeamId(TeamId);
+    return goals.size();
   }
 }
