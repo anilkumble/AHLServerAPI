@@ -7,7 +7,9 @@ import com.ahl.server.entity.Team;
 import com.ahl.server.repository.TeamRepository;
 
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class TeamController {
 
+  @Autowired
   private TeamRepository teamRepository;
 
   @GetMapping("/teams")
@@ -30,7 +33,7 @@ public class TeamController {
     return teamRepository.findAll();
   }
 
-  @PostMapping(path = "/team",consumes = "application/json")
+  @PostMapping(path = "/team",consumes= MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> addTeam(@RequestBody Team team) {
     JsonObject response = new JsonObject();
 

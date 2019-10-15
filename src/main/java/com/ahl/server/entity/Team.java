@@ -19,6 +19,8 @@ public class Team {
   @Id
   private ObjectId id;
   private String name;
+  private String logoUrl;
+  private TeamTag teamTag;
 
   public ObjectId getId() {
     return id;
@@ -36,9 +38,25 @@ public class Team {
     this.name = name;
   }
 
+  public TeamTag getTeamTag() {
+    return teamTag;
+  }
+
+  public void setTeamTag(TeamTag teamTag) {
+    this.teamTag = teamTag;
+  }
+
+  public String getLogoUrl() {
+    return logoUrl;
+  }
+
+  public void setLogoUrl(String logoUrl) {
+    this.logoUrl = logoUrl;
+  }
+
   public static boolean validateTeam(Team team) throws InSufficientDataException {
 
-    if(! ObjectUtils.allNotNull(team.getName()) || ObjectUtils.isEmpty(team.getName())) {
+    if(! ObjectUtils.allNotNull(team.getName(), team.getTeamTag()) || ObjectUtils.isEmpty(team.getName()) || ObjectUtils.isEmpty(team.getTeamTag())) {
       Map<String, String> substitueMap = new HashMap<>();
       substitueMap.put("fields", team.getName());
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);

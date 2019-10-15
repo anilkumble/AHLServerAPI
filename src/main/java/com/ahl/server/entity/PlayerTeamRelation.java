@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "playerrelations")
-public class PlayerRelation {
+public class PlayerTeamRelation {
 
     @Id
     ObjectId id;

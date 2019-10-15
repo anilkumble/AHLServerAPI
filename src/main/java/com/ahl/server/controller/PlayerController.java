@@ -40,8 +40,7 @@ public class PlayerController {
 
   @GetMapping(value = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
   public Iterable<Player> getAllPlayers(){
-    Iterable i = playerRepository.findAll();
-    return i;
+    return  playerRepository.findAll();
   }
 
   @GetMapping("/playersByTournamentId")
