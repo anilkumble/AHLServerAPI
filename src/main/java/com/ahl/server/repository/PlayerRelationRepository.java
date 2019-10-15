@@ -4,10 +4,11 @@ import com.ahl.server.entity.PlayerRelation;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface PlayerRelationRepository extends MongoRepository<PlayerRelation, ObjectId> {
+public interface PlayerRelationRepository extends CrudRepository<PlayerRelation, ObjectId> {
 
     @Query("{'teamId' :?0}")
     public List<PlayerRelation> findAllPlayerinaTeam(ObjectId teamid);

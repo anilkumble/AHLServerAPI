@@ -30,7 +30,7 @@ public class TeamController {
   }
 
   @GetMapping("/teams")
-  public List<Team> getAllTeams(){
+  public Iterable<Team> getAllTeams(){
     return teamRepository.findAll();
   }
 

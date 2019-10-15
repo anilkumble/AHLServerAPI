@@ -59,7 +59,7 @@ public class MatchController {
         }
     }
     @RequestMapping("/matches")
-    public List<Match> getAllMatches()
+    public Iterable<Match> getAllMatches()
     {
         return this.matchRepository.findAll();
     }

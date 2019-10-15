@@ -30,7 +30,7 @@ public class TournamentController {
   }
 
   @GetMapping("/tournaments")
-  public List<Tournament> getAllTournaments(){
+  public Iterable<Tournament> getAllTournaments(){
     return tournamentRepository.findAll();
   }
 

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -110,8 +111,7 @@ public class GoalController {
         }
     }
     @RequestMapping("/goals")
-    public List<Goal> getAllGoals()
-    {
+    public Iterable<Goal> getAllGoals(){
         return this.goalRepository.findAll();
     }
     @DeleteMapping(path = "/goal/{id}")
