@@ -25,10 +25,6 @@ public class TeamController {
 
   private TeamRepository teamRepository;
 
-  public TeamController(TeamRepository teamRepository) {
-    this.teamRepository = teamRepository;
-  }
-
   @GetMapping("/teams")
   public Iterable<Team> getAllTeams(){
     return teamRepository.findAll();

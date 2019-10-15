@@ -38,12 +38,6 @@ public class PlayerController {
   private TournamentRepository tournamentRepository;
   private TeamRepository teamRepository;
 
-  public PlayerController(PlayerRepository playerRepository, TournamentRepository tournamentRepository, TeamRepository teamRepository) {
-    this.playerRepository     = playerRepository;
-    this.tournamentRepository = tournamentRepository;
-    this.teamRepository       = teamRepository;
-  }
-
   @GetMapping(value = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
   public Iterable<Player> getAllPlayers(){
     Iterable i = playerRepository.findAll();

@@ -27,10 +27,6 @@ public class MatchController {
     @Autowired
     private MatchRepository matchRepository;
 
-    public MatchController(TournamentRepository tournamentRepository, TeamRepository teamRepository) {
-//        this.tournamentRepository = tournamentRepository;
-//        this.teamRepository       = teamRepository;
-    }
     @PostMapping(path = "/match")
     public ResponseEntity<String> addMatch(@RequestBody  Match match)
     {

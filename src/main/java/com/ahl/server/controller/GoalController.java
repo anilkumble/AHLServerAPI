@@ -30,10 +30,6 @@ public class GoalController {
     @Autowired
     private MatchRepository matchRepository;
 
-    public GoalController(GoalRepository goalRepository)
-    {
-        this.goalRepository=goalRepository;
-    }
     @RequestMapping("/goalsByPlayerId/{id}")
     public int getGoalsByPlayerId(@PathVariable ObjectId id)
     {
