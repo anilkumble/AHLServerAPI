@@ -4,8 +4,7 @@ package com.ahl.server.controller;
 import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Goal;
-import com.ahl.server.entity.PlayerRelation;
-import com.ahl.server.entity.Team;
+import com.ahl.server.entity.PlayerTeamRelation;
 import com.ahl.server.repository.*;
 import com.google.gson.JsonObject;
 import org.bson.types.ObjectId;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -25,13 +23,13 @@ public class GoalController {
     @Autowired
     private PlayerRepository playerRepository;
     @Autowired
-    private PlayerRelationRepository playerRelationRepository;
+    private PlayerTeamRepository playerTeamRepository;
     @Autowired
     private TeamRepository teamRepository;
     @Autowired
     private MatchRepository matchRepository;
 
-    @RequestMapping("/goalsByPlayerId/{id}")
+    @RequestMapping("/goals-by-player-id/{id}")
     public int getGoalsByPlayerId(@PathVariable ObjectId id)
     {
         List<Goal> goals=goalRepository.findAllGoalsByplayerId(id);
@@ -52,10 +50,10 @@ public class GoalController {
         {
             if(Goal.validateGoal(goal))
             {
-                List<PlayerRelation> againstTeamIdList=playerRelationRepository.findAllPlayerinaTeam(goal.getForTeamId());
+                List<PlayerTeamRelation> againstTeamIdList= playerTeamRepository.findAllPlayerinaTeam(goal.getForTeamId());
                 if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isTeamExist(teamRepository,goal.getForTeamId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId()))
                 {
-                    if(AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(),goal.getPlayerId()))
+                    if(AHLUtils.isPlayerExistInTeam(playerTeamRepository,goal.getForTeamId(),goal.getPlayerId()))
                     {
                         ObjectId againstTeamId=AHLUtils.getAgainstTeamId(matchRepository,goal.getMatchId(),goal.getForTeamId());
                         goal.setAgainstTeamId(againstTeamId);
@@ -128,7 +126,7 @@ public class GoalController {
             if(Goal.validateGoal(goal)){
                 if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isTeamExist(teamRepository,goal.getForTeamId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId()))
                 {
-                    if(AHLUtils.isPlayerExistInTeam(playerRelationRepository,goal.getForTeamId(),goal.getPlayerId()))
+                    if(AHLUtils.isPlayerExistInTeam(playerTeamRepository,goal.getForTeamId(),goal.getPlayerId()))
                     {
                         ObjectId againstTeamId=AHLUtils.getAgainstTeamId(matchRepository,goal.getMatchId(),goal.getForTeamId());
                         goal.setAgainstTeamId(againstTeamId);

@@ -1,8 +1,8 @@
 package com.ahl.server.controller;
 
 import com.ahl.server.AHLConstants;
-import com.ahl.server.entity.PlayerRelation;
-import com.ahl.server.repository.PlayerRelationRepository;
+import com.ahl.server.entity.PlayerTeamRelation;
+import com.ahl.server.repository.PlayerTeamRepository;
 import com.google.gson.JsonObject;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,23 +14,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class PlayerRelationController {
+public class PlayerTeamController {
     @Autowired
-    private PlayerRelationRepository playerRelationRepository;
+    private PlayerTeamRepository playerTeamRepository;
 
-    @RequestMapping("/getallplayers/{id}")
+    @RequestMapping("/get-all-players/{id}")
     public int findAllPlayerinaTeam(@PathVariable ObjectId id)
     {
-        List<PlayerRelation> players=playerRelationRepository.findAllPlayerinaTeam(id);
+        List<PlayerTeamRelation> players= playerTeamRepository.findAllPlayerinaTeam(id);
         return players.size();
     }
-    @PostMapping(path = "/playerrelation")
-    public ResponseEntity<String> addPlayerRealtion(@RequestBody PlayerRelation playerRelation)
+    @PostMapping(path = "/player-relation")
+    public ResponseEntity<String> addPlayerRealtion(@RequestBody PlayerTeamRelation playerTeamRelation)
     {
         JsonObject response = new JsonObject();
         try
         {
-            if (this.playerRelationRepository.save(playerRelation)!=null)
+            if (this.playerTeamRepository.save(playerTeamRelation)!=null)
             {
                 response.addProperty(AHLConstants.SUCCESS, AHLConstants.PLAYER_RELATION_CREATED);
                 return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);

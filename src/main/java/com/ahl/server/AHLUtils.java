@@ -2,8 +2,7 @@ package com.ahl.server;
 
 import com.ahl.server.entity.Goal;
 import com.ahl.server.entity.Match;
-import com.ahl.server.entity.PlayerRelation;
-import com.ahl.server.entity.Team;
+import com.ahl.server.entity.PlayerTeamRelation;
 import com.ahl.server.exception.InvalidDataException;
 
 import com.ahl.server.repository.*;
@@ -71,9 +70,9 @@ public class AHLUtils {
       return false;
     }
 
-  public static boolean isPlayerExistInTeam(PlayerRelationRepository playerRelationRepository, ObjectId forTeamId, ObjectId playerId) {
-    List<PlayerRelation> playerRelation= playerRelationRepository.isPlayerRelationExistInTeam(forTeamId,playerId);
-    return playerRelation.size() > 0;
+  public static boolean isPlayerExistInTeam(PlayerTeamRepository playerTeamRepository, ObjectId forTeamId, ObjectId playerId) {
+    List<PlayerTeamRelation> playerTeamRelation = playerTeamRepository.isPlayerRelationExistInTeam(forTeamId,playerId);
+    return playerTeamRelation.size() > 0;
   }
 
   public static ObjectId getAgainstTeamId(MatchRepository matchRepository,ObjectId matchId, ObjectId forTeamId) throws InvalidDataException {

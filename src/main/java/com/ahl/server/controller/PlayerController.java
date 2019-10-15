@@ -40,21 +40,20 @@ public class PlayerController {
 
   @GetMapping(value = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
   public Iterable<Player> getAllPlayers(){
-    Iterable i = playerRepository.findAll();
-    return i;
+    return  playerRepository.findAll();
   }
 
-  @GetMapping("/playersByTournamentId")
+  @GetMapping("/players-by-tournament-id")
   public List<Player> getAllPlayersByTournamentId(@RequestParam ObjectId tournamentId){
     return playerRepository.findPlayersByTournamentId(tournamentId);
   }
 
-  @GetMapping("/playersByTeamId")
+  @GetMapping("/players-by-team-id")
   public List<Player> getAllPlayersByTeamId(@RequestParam ObjectId teamId){
     return playerRepository.findPlayersByteamId(teamId);
   }
 
-  @GetMapping("/playersByTournamentAndTeamId")
+  @GetMapping("/players-by-tournament-and-team-id")
   public List<Player> getAllPlayersByTournamentAndTeamId(@RequestParam ObjectId tournamentId, @RequestParam ObjectId teamId){
     return playerRepository.findPlayersByournamentAndTeamId(tournamentId, teamId);
   }
