@@ -29,7 +29,7 @@ public class GoalController {
     @Autowired
     private MatchRepository matchRepository;
 
-    @RequestMapping("/goalsByPlayerId/{id}")
+    @RequestMapping("/goals-by-player-id/{id}")
     public int getGoalsByPlayerId(@PathVariable ObjectId id)
     {
         List<Goal> goals=goalRepository.findAllGoalsByplayerId(id);

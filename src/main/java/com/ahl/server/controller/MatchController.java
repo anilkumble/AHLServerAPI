@@ -59,7 +59,7 @@ public class MatchController {
     {
         return this.matchRepository.findAll();
     }
-    @PutMapping("/match{Id}")
+    @PutMapping("/match/{Id}")
     public ResponseEntity<String> editMatch(@RequestBody Match match,@PathVariable ObjectId Id)
     {
         JsonObject response=new JsonObject();
