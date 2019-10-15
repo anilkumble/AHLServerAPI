@@ -70,16 +70,7 @@ public class PlayerController {
     JsonObject response = new JsonObject();
     try {
       Player.validatePlayer(player);
-      if(player.getTeamDetails() != null){
-        if(!ObjectUtils.allNotNull(
-            teamRepository.findFirstById( player.getTeamDetails().get(0).getTeamId()),
-            tournamentRepository.findFirstById( player.getTeamDetails().get(0).getTournamentId()))){
 
-          Map<String, String> substitueMap = new HashMap<>();
-          substitueMap.put("fields", player.getTeamDetails().toString());
-          throw new InvalidDataException(AHLConstants.INVALID_DATA, substitueMap);
-        }
-      }
       if(this.playerRepository.save(player) != null) {
         response.addProperty(AHLConstants.SUCCESS, AHLConstants.PLAYER_CREATED);
         return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
@@ -105,9 +96,7 @@ public class PlayerController {
       oldPlayer.setDepartment(player.getDepartment());
       oldPlayer.setPhoneNo(player.getPhoneNo());
       oldPlayer.setPosition(player.getPosition());
-      if(player.getTeamDetails()!=null) {
-        oldPlayer.getTeamDetails().add(player.getTeamDetails().get(0));
-      }
+
       try {
         Player.validatePlayer(oldPlayer);
       }catch (Exception ex){
