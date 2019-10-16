@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +22,8 @@ public class Tournament {
   private String season;
   private String theme;
   private String tagline;
+  @Field
+  private boolean isLive=true;
 
   public String getSeason() {
     return season;
@@ -54,7 +57,15 @@ public class Tournament {
     this.tagline = tagline;
   }
 
-  public static boolean validateTournament(Tournament tournament) throws InSufficientDataException {
+  public boolean isLive() {
+    return isLive;
+  }
+
+  public void setLive(boolean live) {
+    this.isLive = live;
+  }
+
+  public static void validateTournament(Tournament tournament) throws InSufficientDataException {
 
     if (!ObjectUtils.allNotNull(tournament.getSeason(),tournament.getTagline())
         || ObjectUtils.isEmpty(tournament.getSeason())
@@ -63,7 +74,6 @@ public class Tournament {
       substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.SEASON, AHLConstants.TAG_LINE}) );
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
     }
-    return true;
   }
 
   @Override

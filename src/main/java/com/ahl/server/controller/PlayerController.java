@@ -13,6 +13,7 @@ import com.ahl.server.repository.TeamRepository;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,11 @@ import java.util.Map;
 @RequestMapping("/api")
 public class PlayerController {
 
+  @Autowired
   private PlayerRepository playerRepository;
+  @Autowired
   private TournamentRepository tournamentRepository;
+  @Autowired
   private TeamRepository teamRepository;
 
   @GetMapping(value = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -77,13 +81,12 @@ public class PlayerController {
     }
   }
 
-  @PutMapping(path="/player/{emailId}/{p}")
-  public ResponseEntity<String> editPlayer(@RequestBody Player player, @PathVariable String emailId){
+  @PutMapping(path="/player/{oldPlayer}")
+  public ResponseEntity<String> editPlayer(@RequestBody Player player, @PathVariable Player oldPlayer){
     JsonObject response = new JsonObject();
-    Player oldPlayer = this.playerRepository.findFirstByEmailId(emailId);
     if(oldPlayer != null) {
       oldPlayer.setName(player.getName());
-      oldPlayer.setEmailId(emailId);
+      oldPlayer.setEmailId(player.getEmailId());
       oldPlayer.setAge(player.getAge());
       oldPlayer.setGraduatedYear(player.getGraduatedYear());
       oldPlayer.setDepartment(player.getDepartment());
@@ -106,10 +109,9 @@ public class PlayerController {
     }
   }
 
-  @DeleteMapping(path="/player/{emailId}")
-  public ResponseEntity<String> deletePlayer(@PathVariable String emailId){
+  @DeleteMapping(path="/player/{oldPlayer}")
+  public ResponseEntity<String> deletePlayer(@PathVariable Player oldPlayer){
     JsonObject response = new JsonObject();
-    Player oldPlayer = this.playerRepository.findFirstByEmailId(emailId);
     if(oldPlayer != null) {
       this.playerRepository.delete(oldPlayer);
       response.addProperty(AHLConstants.SUCCESS, AHLConstants.PLAYER_DELETED);

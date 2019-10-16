@@ -1,5 +1,6 @@
 package com.ahl.server.controller;
 
+import com.ahl.server.entity.Player;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
@@ -9,13 +10,7 @@ import com.ahl.server.repository.TournamentRepository;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -50,13 +45,35 @@ public class TournamentController {
 
   }
 
-  @DeleteMapping(path="/tournament/{id}")
-  public ResponseEntity<String> deleteTournament(@PathVariable ObjectId id){
+  @PutMapping(path="/tournament/{oldTournament}")
+  public ResponseEntity<String> editTournament(@RequestBody Tournament tournament, @PathVariable Tournament oldTournament){
     JsonObject response = new JsonObject();
-    Tournament tournament = this.tournamentRepository.findFirstById(id);
-    if(tournament != null) {
+    if(oldTournament != null) {
+      oldTournament.setSeason(tournament.getSeason());
+      oldTournament.setTagline(tournament.getTagline());
+      oldTournament.setTheme(tournament.getTheme());
 
-      this.tournamentRepository.delete(tournament);
+      try {
+        Tournament.validateTournament(oldTournament);
+      }catch (Exception ex){
+        response.addProperty(AHLConstants.ERROR,ex.getMessage());
+        return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+      }
+      this.tournamentRepository.save(oldTournament);
+      response.addProperty(AHLConstants.SUCCESS, AHLConstants.PLAYER_UPDATED);
+      return new ResponseEntity<String>(response.toString(),null, HttpStatus.OK);
+
+    }else{
+      response.addProperty(AHLConstants.ERROR, AHLConstants.PLAYER_NOT_FOUND);
+      return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @DeleteMapping(path="/tournament/{oldTournament}")
+  public ResponseEntity<String> deleteTournament(@PathVariable Tournament oldTournament){
+    JsonObject response = new JsonObject();
+    if(oldTournament != null) {
+      this.tournamentRepository.delete(oldTournament);
       response.addProperty(AHLConstants.SUCCESS, AHLConstants.TOURNAMENT_DELETED);
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.OK);
     }else{

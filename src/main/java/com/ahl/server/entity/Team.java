@@ -21,6 +21,7 @@ public class Team {
   private String name;
   private String logoUrl;
   private TeamTag teamTag;
+  private ObjectId tournamentId;
 
   public ObjectId getId() {
     return id;
@@ -52,6 +53,14 @@ public class Team {
 
   public void setLogoUrl(String logoUrl) {
     this.logoUrl = logoUrl;
+  }
+
+  public ObjectId getTournamentId() {
+    return tournamentId;
+  }
+
+  public void setTournamentId(ObjectId tournamentId) {
+    this.tournamentId = tournamentId;
   }
 
   public static boolean validateTeam(Team team) throws InSufficientDataException {

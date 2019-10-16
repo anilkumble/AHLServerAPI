@@ -92,7 +92,7 @@ public class Player {
         this.emailId = emailId;
     }
 
-    public static boolean validatePlayer(Player player) throws Exception {
+    public static void validatePlayer(Player player) throws Exception {
 
         if (!ObjectUtils.allNotNull(player.getName(), player.getEmailId())
                 || ObjectUtils.isEmpty(player.getName())
@@ -102,7 +102,7 @@ public class Player {
             substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.NAME, AHLConstants.EMAIL_ID}));
             throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
         }
-        return AHLUtils.isValidEmailAddress(player.getEmailId());
+        AHLUtils.isValidEmailAddress(player.getEmailId());
     }
 
     @Override

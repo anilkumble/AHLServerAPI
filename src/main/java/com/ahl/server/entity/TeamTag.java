@@ -46,4 +46,5 @@ public enum TeamTag {
     public int getMapId() {
         return mapId;
     }
+
 }
