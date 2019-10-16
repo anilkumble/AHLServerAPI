@@ -52,6 +52,7 @@ public class TournamentController {
       oldTournament.setSeason(tournament.getSeason());
       oldTournament.setTagline(tournament.getTagline());
       oldTournament.setTheme(tournament.getTheme());
+      oldTournament.setIsLive(tournament.getIsLive());
 
       try {
         Tournament.validateTournament(oldTournament);

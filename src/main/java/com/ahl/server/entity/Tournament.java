@@ -22,7 +22,6 @@ public class Tournament {
   private String season;
   private String theme;
   private String tagline;
-  @Field
   private boolean isLive=true;
 
   public String getSeason() {
@@ -57,12 +56,12 @@ public class Tournament {
     this.tagline = tagline;
   }
 
-  public boolean isLive() {
+  public boolean getIsLive() {
     return isLive;
   }
 
-  public void setLive(boolean live) {
-    this.isLive = live;
+  public void setIsLive(boolean live) {
+    isLive = live;
   }
 
   public static void validateTournament(Tournament tournament) throws InSufficientDataException {
