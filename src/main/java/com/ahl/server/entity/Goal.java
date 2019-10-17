@@ -25,8 +25,8 @@ public class Goal {
     }
 
     public static boolean validateGoal(Goal goal) {
-        if(!ObjectUtils.allNotNull(goal.getForTeamId(),goal.getMatchId(),goal.getPlayerId()) || ObjectUtils.isEmpty(goal.getForTeamId())
-        || ObjectUtils.isEmpty(goal.getPlayerId()) ||  ObjectUtils.isEmpty(goal.getMatchId()))
+        if(!ObjectUtils.allNotNull(goal.getMatchId(),goal.getPlayerId()) ||
+                ObjectUtils.isEmpty(ObjectUtils.isEmpty(goal.getPlayerId()) ||  ObjectUtils.isEmpty(goal.getMatchId())))
         {
             return false;
         }

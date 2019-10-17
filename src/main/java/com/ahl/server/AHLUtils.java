@@ -1,18 +1,22 @@
 package com.ahl.server;
 
-import com.ahl.server.entity.Goal;
-import com.ahl.server.entity.Match;
-import com.ahl.server.entity.PlayerTeamRelation;
+import com.ahl.server.entity.*;
 import com.ahl.server.exception.InvalidDataException;
 
 import com.ahl.server.repository.*;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AHLUtils {
+
+  @Autowired
+  private static TeamRepository teamRepository;
+//  @Autowired
+//  TeamRepository teamRepository;
 
   public static boolean isValidEmailAddress(String email) throws InvalidDataException {
 
@@ -101,10 +105,37 @@ public class AHLUtils {
     List<Goal> goals=goalRepository.findGoalsScoredByTeamId(TeamId);
     return goals.size();
   }
-
   public static int getGoalsAgainstByTeamId(GoalRepository goalRepository, ObjectId TeamId)
   {
     List<Goal> goals=goalRepository.findGoalsAgainstByTeamId(TeamId);
     return goals.size();
+  }
+  public static ObjectId getCurrentTeamByPlayer(PlayerTeamRepository playerTeamRepository,TeamRepository teamRepository,TournamentRepository tournamentRepository,ObjectId playerId) throws InvalidDataException {
+      List<PlayerTeamRelation> list= playerTeamRepository.findAllByPlayerId(playerId);
+      for(int i=0;i<list.size();i++)
+      {
+          if(AHLUtils.getCurrentTournamentByTeam(teamRepository,tournamentRepository,list.get(i).getTeamId()))
+          {
+              return list.get(i).getTeamId();
+          }
+      }
+      throw new InvalidDataException("Invalid Player");
+  }
+  public static boolean getCurrentTournamentByTeam(TeamRepository teamRepository,TournamentRepository tournamentRepository, ObjectId id)
+  {
+    Team team=teamRepository.findFirstById(id);
+    ObjectId tournamentId=team.getTournamentId();
+    if (isCurrentTournament(tournamentRepository,tournamentId))
+      return true;
+    else
+      return false;
+  }
+  public static boolean isCurrentTournament(TournamentRepository tournamentRepository, ObjectId id)
+  {
+      Tournament tournament=tournamentRepository.findFirstById(id);
+      if(tournament.isLive())
+          return true;
+      else
+          return false;
   }
 }
