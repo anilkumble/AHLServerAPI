@@ -19,5 +19,5 @@ public interface PlayerTeamRepository extends CrudRepository<PlayerTeamRelation,
 
     public PlayerTeamRepository findFirstById(ObjectId playerId);
 
-    public List<PlayerTeamRelation> findAllByPlayerId(ObjectId playerId);
+    public List<PlayerTeamRelation> findAllRelationsByPlayerId(ObjectId playerId);
 }

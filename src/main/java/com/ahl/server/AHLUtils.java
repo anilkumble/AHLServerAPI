@@ -111,12 +111,10 @@ public class AHLUtils {
     return goals.size();
   }
   public static ObjectId getCurrentTeamByPlayer(PlayerTeamRepository playerTeamRepository,TeamRepository teamRepository,TournamentRepository tournamentRepository,ObjectId playerId) throws InvalidDataException {
-      List<PlayerTeamRelation> list= playerTeamRepository.findAllByPlayerId(playerId);
-      for(int i=0;i<list.size();i++)
-      {
-          if(AHLUtils.getCurrentTournamentByTeam(teamRepository,tournamentRepository,list.get(i).getTeamId()))
-          {
-              return list.get(i).getTeamId();
+      List<PlayerTeamRelation> relations= playerTeamRepository.findAllRelationsByPlayerId(playerId);
+      for (PlayerTeamRelation relation : relations) {
+          if (AHLUtils.getCurrentTournamentByTeam(teamRepository, tournamentRepository, relation.getTeamId())) {
+              return relation.getTeamId();
           }
       }
       throw new InvalidDataException("Invalid Player");
