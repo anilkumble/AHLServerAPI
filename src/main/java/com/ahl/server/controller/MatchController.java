@@ -59,11 +59,11 @@ public class MatchController {
     {
         return this.matchRepository.findAll();
     }
-    @PutMapping("/match/{Id}")
-    public ResponseEntity<String> editMatch(@RequestBody Match match,@PathVariable ObjectId Id)
+    @PutMapping("/match/{id}")
+    public ResponseEntity<String> editMatch(@RequestBody Match match,@PathVariable ObjectId id)
     {
         JsonObject response=new JsonObject();
-        Match oldMatch=this.matchRepository.findFirstById(Id);
+        Match oldMatch=this.matchRepository.findFirstById(id);
         if(oldMatch!=null && !match.getTeam1().equals(match.getTeam2()))
         {
             oldMatch.setResult(match.getResult());

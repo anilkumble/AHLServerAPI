@@ -1,5 +1,9 @@
 package com.ahl.server.controller;
 
+import com.ahl.server.AHLUtils;
+import com.ahl.server.repository.TournamentRepository;
+import com.google.gson.JsonObject;
+
 import com.ahl.server.AHLConstants;
 import com.ahl.server.entity.Team;
 import com.ahl.server.repository.TeamRepository;
@@ -17,6 +21,8 @@ public class TeamController {
 
     @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    private TournamentRepository tournamentRepository;
 
     @GetMapping("/teams")
     public Iterable<Team> getAllTeams() {
@@ -29,6 +35,7 @@ public class TeamController {
 
         try {
             Team.validateTeam(team);
+            AHLUtils.isTournamentExist(tournamentRepository, team.getTournamentId());
         } catch (Exception ex) {
             response.addProperty(AHLConstants.ERROR, ex.getMessage());
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);

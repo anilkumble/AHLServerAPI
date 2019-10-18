@@ -65,7 +65,8 @@ public class Team {
 
   public static boolean validateTeam(Team team) throws InSufficientDataException {
 
-    if(! ObjectUtils.allNotNull(team.getName(), team.getTeamTag()) || ObjectUtils.isEmpty(team.getName()) || ObjectUtils.isEmpty(team.getTeamTag())) {
+    if(! ObjectUtils.allNotNull(team.getName(), team.getTeamTag(), team.getTournamentId())
+            || ObjectUtils.isEmpty(team.getName()) || ObjectUtils.isEmpty(team.getTeamTag()) || ObjectUtils.isEmpty(team.getTournamentId())) {
       Map<String, String> substitueMap = new HashMap<>();
       substitueMap.put("fields", team.getName());
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
