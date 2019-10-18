@@ -19,5 +19,6 @@ public interface PlayerTeamRepository extends CrudRepository<PlayerTeamRelation,
 
     public PlayerTeamRepository findFirstById(ObjectId playerId);
 
+    @Query("{'playerId' :?0}")
     public List<PlayerTeamRelation> findAllRelationsByPlayerId(ObjectId playerId);
 }
