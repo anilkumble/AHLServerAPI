@@ -70,9 +70,13 @@ public class AHLUtils {
       return false;
     }
 
-  public static boolean isPlayerExistInTeam(PlayerTeamRepository playerTeamRepository, ObjectId forTeamId, ObjectId playerId) {
-    List<PlayerTeamRelation> playerTeamRelation = playerTeamRepository.isPlayerRelationExistInTeam(forTeamId,playerId);
+  public static boolean isPlayerExistInTeam(PlayerTeamRepository playerTeamRepository, ObjectId teamId, ObjectId playerId) {
+    List<PlayerTeamRelation> playerTeamRelation = getPlayerTeamRelation(playerTeamRepository, teamId, playerId);
     return playerTeamRelation.size() > 0;
+  }
+
+  public static List<PlayerTeamRelation> getPlayerTeamRelation(PlayerTeamRepository playerTeamRepository, ObjectId teamId, ObjectId playerId){
+    return  playerTeamRepository.isPlayerRelationExistInTeam(teamId,playerId);
   }
 
   public static ObjectId getAgainstTeamId(MatchRepository matchRepository,ObjectId matchId, ObjectId forTeamId) throws InvalidDataException {

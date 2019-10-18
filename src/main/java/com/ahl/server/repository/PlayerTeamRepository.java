@@ -15,4 +15,8 @@ public interface PlayerTeamRepository extends CrudRepository<PlayerTeamRelation,
 
     @Query(value = "{ 'teamId' : ?0, 'playerId' : ?1 }")
     List<PlayerTeamRelation> isPlayerRelationExistInTeam(ObjectId teamId, ObjectId playerID);
+
+
+    @Query(value = "{ 'playerId' : ?0}")
+    List<PlayerTeamRelation> findAllRelationsByPlayerId(ObjectId playerID);
 }
