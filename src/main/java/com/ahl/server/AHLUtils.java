@@ -135,7 +135,7 @@ public class AHLUtils {
   public static boolean isCurrentTournament(TournamentRepository tournamentRepository, ObjectId id)
   {
       Tournament tournament=tournamentRepository.findFirstById(id);
-      if(tournament.isLive())
+      if(tournament.getIsLive())
           return true;
       else
           return false;
