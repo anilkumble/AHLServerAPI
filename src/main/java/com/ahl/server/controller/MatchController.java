@@ -33,8 +33,8 @@ public class MatchController {
         JsonObject response = new JsonObject();
         try {
             Match.validateMatch(match);
-            if(AHLUtils.isTeamExist(teamRepository,match.getTeam1()) && AHLUtils.isTeamExist(teamRepository,match.getTeam2()) && AHLUtils.isTournamentExist(tournamentRepository,match.getTournamentId())
-            && ! match.getTeam2().equals(match.getTeam1()))
+            if(AHLUtils.isTeamExist(teamRepository,match.getTeam1()) && AHLUtils.isTeamExist(teamRepository,match.getTeam2())
+               && AHLUtils.isTournamentExist(tournamentRepository,match.getTournamentId()) && !match.getTeam2().equals(match.getTeam1()))
             {
                 if (this.matchRepository.save(match) != null)
                 {
@@ -87,11 +87,11 @@ public class MatchController {
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
     }
-    @DeleteMapping(path="/match/{Id}")
-    public ResponseEntity<String> deleteMatch(@PathVariable ObjectId Id)
+    @DeleteMapping(path="/match/{id}")
+    public ResponseEntity<String> deleteMatch(@PathVariable ObjectId id)
     {
         JsonObject response=new JsonObject();
-        Match oldMatch=this.matchRepository.findFirstById(Id);
+        Match oldMatch=this.matchRepository.findFirstById(id);
         if(oldMatch!=null)
         {
             this.matchRepository.delete(oldMatch);

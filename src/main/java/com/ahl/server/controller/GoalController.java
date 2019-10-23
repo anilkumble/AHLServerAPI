@@ -4,8 +4,10 @@ package com.ahl.server.controller;
 import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Goal;
+import com.ahl.server.entity.Match;
 import com.ahl.server.entity.Player;
 import com.ahl.server.entity.Team;
+import com.ahl.server.exception.InvalidDataException;
 import com.ahl.server.repository.*;
 import com.google.gson.JsonObject;
 import org.bson.types.ObjectId;
@@ -68,7 +70,7 @@ public class GoalController {
                 {
                     ObjectId forTeamId=AHLUtils.getCurrentTeamByPlayer(playerTeamRepository,teamRepository,tournamentRepository,goal.getPlayerId());
                     goal.setForTeamId(forTeamId);
-                    ObjectId againstTeamId=AHLUtils.getAgainstTeamId(matchRepository,goal.getMatchId(),goal.getForTeamId());
+                    ObjectId againstTeamId=getAgainstTeamId(goal.getMatchId(),goal.getForTeamId());
                     goal.setAgainstTeamId(againstTeamId);
                     if(this.goalRepository.save(goal)!=null)
                     {
@@ -136,7 +138,7 @@ public class GoalController {
                     if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId())  && AHLUtils.isMatchExist(matchRepository,goal.getMatchId()))
                     {
                         ObjectId forTeamId=AHLUtils.getCurrentTeamByPlayer(playerTeamRepository,teamRepository,tournamentRepository,goal.getPlayerId());
-                        ObjectId againstTeamId=AHLUtils.getAgainstTeamId(matchRepository,goal.getMatchId(),forTeamId);
+                        ObjectId againstTeamId=getAgainstTeamId(goal.getMatchId(),forTeamId);
                         oldGoal.setMatchId(goal.getMatchId());
                         oldGoal.setAgainstTeamId(againstTeamId);
                         oldGoal.setForTeamId(forTeamId);
@@ -174,4 +176,30 @@ public class GoalController {
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    private ObjectId getAgainstTeamId(ObjectId matchId, ObjectId forTeamId) throws InvalidDataException {
+        Match match = matchRepository.findFirstById(matchId);
+        if (match != null) {
+            if (match.getTeam1().equals(forTeamId)) {
+                return match.getTeam2();
+            } else if (match.getTeam2().equals(forTeamId)) {
+                return match.getTeam1();
+            } else {
+                throw new InvalidDataException("Team is not in the match");
+            }
+        } else {
+            throw new InvalidDataException("Team not found");
+        }
+    }
+
+    private int getGoalsScoredByTeamId(ObjectId teamId) {
+        List<Goal> goals = goalRepository.findGoalsScoredByTeamId(teamId);
+        return goals.size();
+    }
+
+    private int getGoalsAgainstByTeamId(ObjectId teamId) {
+        List<Goal> goals = goalRepository.findGoalsAgainstByTeamId(teamId);
+        return goals.size();
+    }
+
 }

@@ -63,7 +63,7 @@ public class Team {
     this.tournamentId = tournamentId;
   }
 
-  public static boolean validateTeam(Team team) throws InSufficientDataException {
+  public static void validateTeam(Team team) throws InSufficientDataException {
 
     if(! ObjectUtils.allNotNull(team.getName(), team.getTeamTag(), team.getTournamentId())
             || ObjectUtils.isEmpty(team.getName()) || ObjectUtils.isEmpty(team.getTeamTag()) || ObjectUtils.isEmpty(team.getTournamentId())) {
@@ -71,7 +71,6 @@ public class Team {
       substitueMap.put("fields", team.getName());
       throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
     }
-    return true;
   }
 
   @Override
