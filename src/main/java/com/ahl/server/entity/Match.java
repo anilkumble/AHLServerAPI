@@ -1,5 +1,6 @@
 package com.ahl.server.entity;
 
+import com.ahl.server.enums.MatchStatus;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -13,6 +14,7 @@ public class Match {
     private ObjectId team2;
     private ObjectId tournamentId;
     private int result;
+    private MatchStatus status;
 
     public Match(ObjectId team1, ObjectId team2, ObjectId tournamentId) {
         this.team1 = team1;
@@ -39,6 +41,14 @@ public class Match {
 
     public ObjectId getTeam1() {
         return team1;
+    }
+
+    public MatchStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MatchStatus status) {
+        this.status = status;
     }
 
     public void setTeam1(ObjectId team1) {

@@ -1,4 +1,4 @@
-package com.ahl.server.entity;
+package com.ahl.server.enums;
 
 public enum TeamTag {
 

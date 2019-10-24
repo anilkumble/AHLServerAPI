@@ -53,6 +53,8 @@ public class AHLConstants {
   public static final String MATCH_CREATED   = "Match created successfully";
   public static final String MATCH_UPDATED   = "Match updated successfully";
   public static final String MATCH_DELETED   = "Match deleted successfully";
+  public static final String MATCH_STARTED   = "Match started successfully";
+  public static final String MATCH_ENDED     = "Match ended successfully";
   public static final String MATCH_NOT_FOUND = "Match not found";
 
 

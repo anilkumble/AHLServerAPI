@@ -1,6 +1,8 @@
 package com.ahl.server.controller;
 
 import com.ahl.server.AHLUtils;
+import com.ahl.server.entity.Points;
+import com.ahl.server.repository.PointsRepository;
 import com.ahl.server.repository.TournamentRepository;
 import com.google.gson.JsonObject;
 
@@ -23,6 +25,8 @@ public class TeamController {
     private TeamRepository teamRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
+    @Autowired
+    private PointsRepository pointsRepository;
 
     @GetMapping("/teams")
     public Iterable<Team> getAllTeams() {
@@ -32,7 +36,6 @@ public class TeamController {
     @PostMapping(path = "/team", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addTeam(@RequestBody Team team) {
         JsonObject response = new JsonObject();
-
         try {
             Team.validateTeam(team);
             AHLUtils.isTournamentExist(tournamentRepository, team.getTournamentId());
@@ -40,12 +43,13 @@ public class TeamController {
             response.addProperty(AHLConstants.ERROR, ex.getMessage());
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
         }
-        this.teamRepository.save(team);
+        Team newTeam = this.teamRepository.save(team);
+        Points points = new Points(newTeam.getId());
+        pointsRepository.save(points);
         response.addProperty(AHLConstants.SUCCESS, AHLConstants.TEAM_CREATED);
         return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
 
     }
-
 
     @DeleteMapping(path = "/team/{id}")
     public ResponseEntity<String> deleteTeam(@PathVariable ObjectId id) {

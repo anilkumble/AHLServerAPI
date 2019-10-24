@@ -3,6 +3,7 @@ package com.ahl.server.entity;
 
 import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
+import com.ahl.server.enums.Position;
 import com.ahl.server.exception.InSufficientDataException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -21,7 +22,7 @@ public class Player {
     private ObjectId id;
     private String name;
     private String department;
-    private String position;
+    private Position position;
     private String emailId;
     private int age;
     private int graduatedYear;
@@ -52,11 +53,11 @@ public class Player {
         this.department = department;
     }
 
-    public String getPosition() {
+    public Position getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(Position position) {
         this.position = position;
     }
 
@@ -93,7 +94,6 @@ public class Player {
     }
 
     public static void validatePlayer(Player player) throws Exception {
-
         if (!ObjectUtils.allNotNull(player.getName(), player.getEmailId())
                 || ObjectUtils.isEmpty(player.getName())
                 || ObjectUtils.isEmpty(player.getEmailId())) {
