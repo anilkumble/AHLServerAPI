@@ -31,6 +31,12 @@ public class MatchController {
     @Autowired
     private GoalRepository goalRepository;
 
+
+    @RequestMapping("/matches")
+    public Iterable<Match> getAllMatches() {
+        return this.matchRepository.findAll();
+    }
+
     @PostMapping(path = "/match")
     public ResponseEntity<String> addMatch(@RequestBody Match match) {
         JsonObject response = new JsonObject();
@@ -56,11 +62,6 @@ public class MatchController {
             response.addProperty(AHLConstants.ERROR, ex.getMessage());
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @RequestMapping("/matches")
-    public Iterable<Match> getAllMatches() {
-        return this.matchRepository.findAll();
     }
 
     @PutMapping("/match/{oldMatch}")
