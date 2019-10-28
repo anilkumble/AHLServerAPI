@@ -2,14 +2,12 @@ package com.ahl.server.controller;
 
 
 import com.ahl.server.AHLUtils;
+import com.ahl.server.entity.*;
+import com.ahl.server.repository.*;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
-import com.ahl.server.entity.Player;
 import com.ahl.server.exception.InvalidDataException;
-import com.ahl.server.repository.TournamentRepository;
-import com.ahl.server.repository.PlayerRepository;
-import com.ahl.server.repository.TeamRepository;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,28 +37,35 @@ public class PlayerController {
   @Autowired
   private PlayerRepository playerRepository;
   @Autowired
+  private PlayerTeamRepository playerTeamRepository;
+  @Autowired
   private TournamentRepository tournamentRepository;
   @Autowired
   private TeamRepository teamRepository;
+  @Autowired
+  private GoalRepository goalRepository;
 
   @GetMapping(value = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
   public Iterable<Player> getAllPlayers(){
     return  playerRepository.findAll();
   }
 
-  @GetMapping("/players-by-tournament-id")
-  public List<Player> getAllPlayersByTournamentId(@RequestParam ObjectId tournamentId){
-    return playerRepository.findPlayersByTournamentId(tournamentId);
-  }
-
-  @GetMapping("/players-by-team-id")
-  public List<Player> getAllPlayersByTeamId(@RequestParam ObjectId teamId){
-    return playerRepository.findPlayersByteamId(teamId);
-  }
-
-  @GetMapping("/players-by-tournament-and-team-id")
-  public List<Player> getAllPlayersByTournamentAndTeamId(@RequestParam ObjectId tournamentId, @RequestParam ObjectId teamId){
-    return playerRepository.findPlayersByournamentAndTeamId(tournamentId, teamId);
+  @GetMapping("/players/{team}")
+  public ResponseEntity<Object> getAllPlayersByTournamentAndTeamId(@PathVariable Team team){
+    JsonObject response = new JsonObject();
+    if(team != null) {
+      List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationByTeamId(team.getId());
+      List<PlayerResult> playerResultList = new ArrayList<>();
+      for(PlayerTeamRelation relation : relations){
+        Player p = playerRepository.findFirstById(relation.getPlayerId());
+        int goalCount = goalRepository.findAllGoalsByplayerId(relation.getPlayerId()).size();
+        playerResultList.add(new PlayerResult(p,goalCount,1,0,0));
+      }
+      return new ResponseEntity<Object>(playerResultList, null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }else{
+      response.addProperty(AHLConstants.ERROR, AHLConstants.TEAM_NOT_FOUND);
+      return new ResponseEntity<Object>(response, null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @PostMapping(path = "/player")

@@ -9,16 +9,13 @@ import java.util.List;
 
 public interface PlayerTeamRepository extends CrudRepository<PlayerTeamRelation, ObjectId> {
 
-    @Query("{'teamId' :?0}")
-    public List<PlayerTeamRelation> findAllPlayerinaTeam(ObjectId teamid);
+    public PlayerTeamRepository findFirstById(ObjectId id);
 
+    public List<PlayerTeamRelation> findAllRelationByPlayerId(ObjectId playerId);
+
+    public List<PlayerTeamRelation> findAllRelationByTeamId(ObjectId teamId);
 
     @Query(value = "{ 'teamId' : ?0, 'playerId' : ?1 }")
     List<PlayerTeamRelation> isPlayerRelationExistInTeam(ObjectId teamId, ObjectId playerID);
 
-
-    public PlayerTeamRepository findFirstById(ObjectId playerId);
-
-    @Query("{'playerId' :?0}")
-    public List<PlayerTeamRelation> findAllRelationsByPlayerId(ObjectId playerId);
 }

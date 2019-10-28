@@ -72,7 +72,7 @@ public class AHLUtils {
     }
 
     public static ObjectId getCurrentTeamByPlayer(PlayerTeamRepository playerTeamRepository, TeamRepository teamRepository, TournamentRepository tournamentRepository, ObjectId playerId) throws InvalidDataException {
-        List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationsByPlayerId(playerId);
+        List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationByPlayerId(playerId);
         for (PlayerTeamRelation relation : relations) {
             if (AHLUtils.getCurrentTournamentByTeam(teamRepository, tournamentRepository, relation.getTeamId())) {
                 return relation.getTeamId();

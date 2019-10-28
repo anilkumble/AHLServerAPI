@@ -31,12 +31,6 @@ public class PlayerTeamController {
     @Autowired
     private TournamentRepository tournamentRepository;
 
-    @RequestMapping("/get-all-players/{id}")
-    public int findAllPlayerinaTeam(@PathVariable ObjectId id)
-    {
-        List<PlayerTeamRelation> players= playerTeamRepository.findAllPlayerinaTeam(id);
-        return players.size();
-    }
     @PostMapping(path = "/player-relation")
     public ResponseEntity<String> addPlayerTeamRelation(@RequestBody PlayerTeamRelation playerTeamRelation)
     {
@@ -72,7 +66,7 @@ public class PlayerTeamController {
         Team newTeam = this.teamRepository.findFirstById(playerTeamRelation.getTeamId());
         ObjectId newTeamTournamentId = newTeam.getTournamentId();
         Tournament newTournament = tournamentRepository.findFirstById(newTeamTournamentId);
-        List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationsByPlayerId(playerTeamRelation.getPlayerId());
+        List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationByPlayerId(playerTeamRelation.getPlayerId());
         for(PlayerTeamRelation relation : relations){
             Team oldTeam = this.teamRepository.findFirstById(relation.getTeamId());
             ObjectId oldTeamTournamentId = oldTeam.getTournamentId();
