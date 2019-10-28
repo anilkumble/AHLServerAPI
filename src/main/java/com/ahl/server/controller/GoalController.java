@@ -69,9 +69,9 @@ public class GoalController {
                 if(AHLUtils.isPlayerExist(playerRepository,goal.getPlayerId()) && AHLUtils.isMatchExist(matchRepository,goal.getMatchId()))
                 {
                     ObjectId forTeamId=AHLUtils.getCurrentTeamByPlayer(playerTeamRepository,teamRepository,tournamentRepository,goal.getPlayerId());
-                    goal.setForTeamId(forTeamId);
-                    ObjectId againstTeamId=getAgainstTeamId(goal.getMatchId(),goal.getForTeamId());
-                    goal.setAgainstTeamId(againstTeamId);
+                    ObjectId againstTeamId=getAgainstTeamId(goal.getMatchId(),forTeamId);
+                    ObjectId tournamentId=matchRepository.findFirstById(goal.getMatchId()).getTournamentId();
+                    goal.setTournamentId(tournamentId);
                     if(this.goalRepository.save(goal)!=null)
                     {
                         response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
@@ -140,9 +140,9 @@ public class GoalController {
                         ObjectId forTeamId=AHLUtils.getCurrentTeamByPlayer(playerTeamRepository,teamRepository,tournamentRepository,goal.getPlayerId());
                         ObjectId againstTeamId=getAgainstTeamId(goal.getMatchId(),forTeamId);
                         oldGoal.setMatchId(goal.getMatchId());
-                        oldGoal.setAgainstTeamId(againstTeamId);
-                        oldGoal.setForTeamId(forTeamId);
                         oldGoal.setPlayerId(goal.getPlayerId());
+                        ObjectId tournamentId=matchRepository.findFirstById(goal.getMatchId()).getTournamentId();
+                        oldGoal.setTournamentId(tournamentId);
                         if(this.goalRepository.save(oldGoal)!=null)
                         {
                             response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_UPDATED);

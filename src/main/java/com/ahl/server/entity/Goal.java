@@ -12,17 +12,17 @@ public class Goal {
     @Id
     private ObjectId id;
     private ObjectId matchId;
-    private ObjectId forTeamId;
-    private ObjectId againstTeamId;
     private ObjectId playerId;
 
-    public ObjectId getAgainstTeamId() {
-        return againstTeamId;
+    public ObjectId getTournamentId() {
+        return tournamentId;
     }
 
-    public void setAgainstTeamId(ObjectId againstTeamId) {
-        this.againstTeamId = againstTeamId;
+    public void setTournamentId(ObjectId tournamentId) {
+        this.tournamentId = tournamentId;
     }
+
+    private ObjectId tournamentId;
 
     public static boolean validateGoal(Goal goal) {
         if(!ObjectUtils.allNotNull(goal.getMatchId(),goal.getPlayerId()) ||
@@ -31,15 +31,6 @@ public class Goal {
             return false;
         }
         return true;
-    }
-
-
-    public ObjectId getForTeamId() {
-        return forTeamId;
-    }
-
-    public void setForTeamId(ObjectId forTeamId) {
-        this.forTeamId = forTeamId;
     }
 
     public ObjectId getId() {
