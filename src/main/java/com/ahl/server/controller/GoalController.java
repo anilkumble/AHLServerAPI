@@ -33,11 +33,19 @@ public class GoalController {
     private MatchRepository matchRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
-    @RequestMapping("/goals-by-player-id/{id}")
-    public int getGoalsByPlayerId(@PathVariable ObjectId id)
+    @RequestMapping("/goals/{tournamentId}/{id}")
+    public int getGoalsByPlayerId(@PathVariable ObjectId tournamentId,@PathVariable ObjectId id)
     {
         List<Goal> goals=goalRepository.findAllGoalsByplayerId(id);
-        return goals.size();
+        int count=0;
+        for(Goal i:goals)
+        {
+            if (i.getTournamentId().equals(tournamentId))
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
     @RequestMapping("/testgoal/{id}")

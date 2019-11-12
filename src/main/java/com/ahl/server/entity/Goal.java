@@ -13,7 +13,7 @@ public class Goal {
     private ObjectId id;
     private ObjectId matchId;
     private ObjectId playerId;
-
+    private ObjectId tournamentId;
     public ObjectId getTournamentId() {
         return tournamentId;
     }
@@ -21,8 +21,6 @@ public class Goal {
     public void setTournamentId(ObjectId tournamentId) {
         this.tournamentId = tournamentId;
     }
-
-    private ObjectId tournamentId;
 
     public static boolean validateGoal(Goal goal) {
         if(!ObjectUtils.allNotNull(goal.getMatchId(),goal.getPlayerId()) ||
