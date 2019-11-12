@@ -30,6 +30,8 @@ public class MatchController {
     private PointsRepository pointsRepository;
     @Autowired
     private GoalRepository goalRepository;
+    @Autowired
+    private PlayerTeamRepository playerTeamRepository;
 
 
     @RequestMapping("/matches")
@@ -129,13 +131,24 @@ public class MatchController {
     }
 
     @PostMapping(path = "/end-match/{match}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<String> endMatch(@PathVariable Match match, @RequestBody MultiValueMap<String,String> data) {
+    public ResponseEntity<String> endMatch(@PathVariable Match match, @RequestBody MultiValueMap<String,Object> data) {
         JsonObject response = new JsonObject();
         if(match != null){
-            int result =  Integer.parseInt(Objects.requireNonNull(data.getFirst("result")));
+
+            int result =  Integer.parseInt((String)Objects.requireNonNull(data.getFirst("result")));
+            ObjectId mom = (ObjectId)Objects.requireNonNull(data.getFirst("mom"));
+            ObjectId buddingPlayer = (ObjectId)Objects.requireNonNull(data.getFirst("buddingPlayer"));
+
+            ResponseEntity<String> responseEntity = checkEndMatch(match, result, mom, buddingPlayer);
+            if(responseEntity!=null){
+                return responseEntity;
+            }
+
             if(result == 0 || result == 1 || result == 2){
                 match.setResult(result);
                 match.setStatus(MatchStatus.COMPLETED);
+                match.setMom(mom);
+                match.setBuddingPlayer(buddingPlayer);
 
                 if(matchRepository.save(match) != null) {
                     Points team1Point = pointsRepository.findFirstByTeamId(match.getTeam1());
@@ -179,6 +192,24 @@ public class MatchController {
             response.addProperty(AHLConstants.ERROR, AHLConstants.PLAYER_NOT_FOUND);
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private ResponseEntity<String> checkEndMatch(Match match, int result, ObjectId mom, ObjectId buddingPlayer) {
+        JsonObject response = new JsonObject();
+
+
+        if(!AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), mom)
+                && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), mom)){
+            response.addProperty(AHLConstants.ERROR, "Man of the player not found in either of teams");
+            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+        }
+
+        if(!AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), buddingPlayer)
+                && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), buddingPlayer)){
+            response.addProperty(AHLConstants.ERROR, "Budding player not found in either of teams");
+            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+        }
+        return null;
     }
 
     private int getGoalsScoredByTeamId(ObjectId teamId) {

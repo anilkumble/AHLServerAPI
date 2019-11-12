@@ -20,7 +20,7 @@ public class Team {
   @Id
   private ObjectId id;
   private String name;
-  private String logoUrl;
+  private String teamLogo;
   private TeamTag teamTag;
   private ObjectId tournamentId;
 
@@ -48,12 +48,12 @@ public class Team {
     this.teamTag = teamTag;
   }
 
-  public String getLogoUrl() {
-    return logoUrl;
+  public String getTeamLogo() {
+    return teamLogo;
   }
 
-  public void setLogoUrl(String logoUrl) {
-    this.logoUrl = logoUrl;
+  public void setTeamLogo(String teamLogo) {
+    this.teamLogo = teamLogo;
   }
 
   public ObjectId getTournamentId() {

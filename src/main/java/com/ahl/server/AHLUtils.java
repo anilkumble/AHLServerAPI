@@ -12,7 +12,6 @@ import java.util.Map;
 public class AHLUtils {
 
     public static void isValidEmailAddress(String email) throws InvalidDataException {
-
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(AHLConstants.EMAIL_PATTERN);
         java.util.regex.Matcher m = p.matcher(email);
         if (m.matches()) {

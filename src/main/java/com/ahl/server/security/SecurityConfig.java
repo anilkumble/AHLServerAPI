@@ -17,7 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .httpBasic()
                 .and()
                 .authorizeRequests().anyRequest().authenticated()
-//                .antMatchers("/api/tournament").hasRole("ADMIN")
+                .antMatchers("/api/tournament").hasRole("ADMIN")
 //                .antMatchers("/api/tournament/*").hasRole("ADMIN")
 //                .antMatchers("/api/team").hasRole("ADMIN")
 //                .antMatchers("/api/team/*").hasRole("ADMIN")
@@ -48,6 +48,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/api/tournaments","/api/teams","/api/matches", "/api/goals", "api/players");
+        web.ignoring().anyRequest();//antMatchers("/api/tournaments","/api/teams","/api/matches", "/api/goals", "api/players");
     }
 }
