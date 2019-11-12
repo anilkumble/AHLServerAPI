@@ -24,15 +24,6 @@ public class Goal {
 
     private ObjectId tournamentId;
 
-    public static boolean validateGoal(Goal goal) {
-        if(!ObjectUtils.allNotNull(goal.getMatchId(),goal.getPlayerId()) ||
-                ObjectUtils.isEmpty(ObjectUtils.isEmpty(goal.getPlayerId()) ||  ObjectUtils.isEmpty(goal.getMatchId())))
-        {
-            return false;
-        }
-        return true;
-    }
-
     public ObjectId getId() {
         return id;
     }
@@ -49,13 +40,21 @@ public class Goal {
         this.matchId = matchId;
     }
 
-
     public ObjectId getPlayerId() {
         return playerId;
     }
 
     public void setPlayerId(ObjectId playerId) {
         this.playerId = playerId;
+    }
+
+    public static boolean validateGoal(Goal goal) {
+        if(!ObjectUtils.allNotNull(goal.getMatchId(),goal.getPlayerId()) ||
+                ObjectUtils.isEmpty(ObjectUtils.isEmpty(goal.getPlayerId()) ||  ObjectUtils.isEmpty(goal.getMatchId())))
+        {
+            return false;
+        }
+        return true;
     }
 
 }
