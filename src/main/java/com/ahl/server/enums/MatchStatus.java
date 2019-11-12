@@ -2,15 +2,10 @@ package com.ahl.server.enums;
 
 public enum MatchStatus {
 
-    UPCOMING (1),
+    UPCOMING ,
 
-    LIVE_MATCH (2),
+    LIVE_MATCH ,
 
-    COMPLETED (3);
+    COMPLETED ;
 
-    private int id;
-
-    MatchStatus(int id) {
-        this.id = id;
-    }
 }
