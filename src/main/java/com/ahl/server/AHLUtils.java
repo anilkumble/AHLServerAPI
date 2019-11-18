@@ -5,6 +5,7 @@ import com.ahl.server.exception.InvalidDataException;
 import com.ahl.server.repository.*;
 import org.bson.types.ObjectId;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,12 @@ public class AHLUtils {
         Map<String, String> substitueMap = new HashMap<>();
         substitueMap.put("fields", email);
         throw new InvalidDataException(AHLConstants.INVALID_DATA, substitueMap);
+    }
+
+    public static boolean isFutureDate(Date date){
+        Date currentDate = new Date(System.currentTimeMillis() - 1000*60*60*24);
+        return date.after(currentDate);
+
     }
 
     public static boolean isPlayerExist(PlayerRepository playerRepository, ObjectId playerId) throws InvalidDataException {

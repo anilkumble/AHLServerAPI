@@ -1,25 +1,24 @@
 package com.ahl.server.entity;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "points")
 public class Points {
 
-    @Id
-    private ObjectId id;
     private ObjectId teamId;
+    private String teamName;
+    private int position;
+    private String teamLogo;
     private int points;
     private int goalScored;
     private int goalAgainst;
+    private int goalDifference;
     private int matchesPlayed;
     private int won;
     private int draw;
     private int lost;
 
-    public Points(ObjectId teamId) {
-        this.teamId = teamId;
+    public Points() {
+
     }
 
     public ObjectId getTeamId() {
@@ -28,6 +27,38 @@ public class Points {
 
     public void setTeamId(ObjectId teamId) {
         this.teamId = teamId;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public String getTeamLogo() {
+        return teamLogo;
+    }
+
+    public void setTeamLogo(String teamLogo) {
+        this.teamLogo = teamLogo;
+    }
+
+    public int getGoalDifference() {
+        return goalDifference;
+    }
+
+    public void setGoalDifference(int goalDifference) {
+        this.goalDifference = goalDifference;
     }
 
     public int getPoints() {

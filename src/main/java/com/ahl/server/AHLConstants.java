@@ -21,6 +21,10 @@ public class AHLConstants {
   public static final String PLAYERID         = "playerId";
   public static final String LEAGUEID         = "leagueId";
 
+  /*TeamTag category */
+  public static final String MEN            = "men";
+  public static final String WOMEN          = "women";
+  public static final String OTHER          = "other";
 
 
 

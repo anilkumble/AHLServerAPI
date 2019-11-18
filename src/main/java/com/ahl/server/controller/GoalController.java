@@ -33,6 +33,7 @@ public class GoalController {
     private MatchRepository matchRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
+
     @RequestMapping("/goals-by-player-id/{id}")
     public int getGoalsByPlayerId(@PathVariable ObjectId id)
     {
