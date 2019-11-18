@@ -13,6 +13,16 @@ public class Card {
     private ObjectId matchId;
     private ObjectId playerId;
     private CardType cardType;
+    private ObjectId forTeamId;
+
+    public ObjectId getForTeamId() {
+        return forTeamId;
+    }
+
+    public void setForTeamId(ObjectId forTeamId) {
+        this.forTeamId = forTeamId;
+    }
+
     private int time;
 
     public int getTime() {

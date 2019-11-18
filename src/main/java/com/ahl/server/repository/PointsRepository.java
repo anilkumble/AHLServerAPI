@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface PointsRepository extends CrudRepository<Points, ObjectId> {
 
-    public Points findFirstById(ObjectId id);
-
-    public Points findFirstByTeamId(ObjectId teamId);
+//    public Points findFirstById(ObjectId id);
+//
+//    public Points findFirstByTeamId(ObjectId teamId);
 
 }
 
