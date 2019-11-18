@@ -26,7 +26,8 @@ public class Player {
     private String emailId;
     private int age;
     private int graduatedYear;
-    private int phoneNo;
+    private String phoneNo;
+    private int profile;
 
     public Player(String name, String emailId) {
         this.name = name;
@@ -77,12 +78,20 @@ public class Player {
         this.graduatedYear = graduatedYear;
     }
 
-    public int getPhoneNo() {
+    public String getPhoneNo() {
         return phoneNo;
     }
 
-    public void setPhoneNo(int phoneNo) {
+    public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
+    }
+
+    public int getProfile() {
+        return profile;
+    }
+
+    public void setProfile(int profile) {
+        this.profile = profile;
     }
 
     public String getEmailId() {
@@ -95,8 +104,7 @@ public class Player {
 
     public static void validatePlayer(Player player) throws Exception {
         if (!ObjectUtils.allNotNull(player.getName(), player.getEmailId())
-                || ObjectUtils.isEmpty(player.getName())
-                || ObjectUtils.isEmpty(player.getEmailId())) {
+                || ObjectUtils.isEmpty(player.getName())) {
 
             Map<String, String> substitueMap = new HashMap<>();
             substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.NAME, AHLConstants.EMAIL_ID}));
