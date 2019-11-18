@@ -43,11 +43,14 @@ public class TeamController {
             response.addProperty(AHLConstants.ERROR, ex.getMessage());
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
         }
-        Team newTeam = this.teamRepository.save(team);
-        Points points = new Points(newTeam.getId());
-        pointsRepository.save(points);
-        response.addProperty(AHLConstants.SUCCESS, AHLConstants.TEAM_CREATED);
-        return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+        if(this.teamRepository.save(team)!=null)
+        {
+            response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
+            return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+        } else{
+            response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+            return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     }
 
