@@ -200,14 +200,4 @@ public class GoalController {
         }
     }
 
-    private int getGoalsScoredByTeamId(ObjectId teamId) {
-        List<Goal> goals = goalRepository.findGoalsScoredByTeamId(teamId);
-        return goals.size();
-    }
-
-    private int getGoalsAgainstByTeamId(ObjectId teamId) {
-        List<Goal> goals = goalRepository.findGoalsAgainstByTeamId(teamId);
-        return goals.size();
-    }
-
 }
