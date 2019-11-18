@@ -20,6 +20,7 @@ public class Tournament {
     private String season;
     private String theme;
     private String tagline;
+    private String tournamentLogo;
     private boolean isLive = true;
 
     public String getSeason() {
@@ -60,6 +61,14 @@ public class Tournament {
 
     public void setIsLive(boolean live) {
         isLive = live;
+    }
+
+    public String getTournamentLogo() {
+        return tournamentLogo;
+    }
+
+    public void setTournamentLogo(String tournamentLogo) {
+        this.tournamentLogo = tournamentLogo;
     }
 
     public static void validateTournament(Tournament tournament) throws InSufficientDataException {
