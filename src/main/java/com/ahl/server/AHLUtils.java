@@ -92,6 +92,11 @@ public class AHLUtils {
         ObjectId tournamentId = team.getTournamentId();
         return isCurrentTournament(tournamentRepository, tournamentId);
     }
+    public static ObjectId getTournamentByMatch(MatchRepository matchRepository, ObjectId id) {
+        Match match = matchRepository.findFirstById(id);
+        ObjectId tournamentId = match.getTournamentId();
+        return tournamentId;
+    }
 
     public static boolean isCurrentTournament(TournamentRepository tournamentRepository, ObjectId id) {
         Tournament tournament = tournamentRepository.findFirstById(id);
