@@ -73,7 +73,6 @@ public class PlayerController {
     JsonObject response = new JsonObject();
     try {
       Player.validatePlayer(player);
-
       if(this.playerRepository.save(player) != null) {
         response.addProperty(AHLConstants.SUCCESS, AHLConstants.PLAYER_CREATED);
         return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);

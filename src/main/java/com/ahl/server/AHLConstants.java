@@ -74,5 +74,9 @@ public class AHLConstants {
   public static final String GOAL_UPDATED ="Goal updated successfully";
   public static final String GOAL_NOT_FOUND ="Goal not found";
 
-
+  /*For Card */
+  public static final String CARD_CREATED ="Card created successfully";
+  public static final String CARD_DELETED ="Card deleted successfully";
+  public static final String CARD_UPDATED ="Card updated successfully";
+  public static final String CARD_NOT_FOUND ="Card not found";
 }
