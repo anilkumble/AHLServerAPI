@@ -1,6 +1,7 @@
 package com.ahl.server.repository;
 
 import com.ahl.server.entity.Match;
+import com.ahl.server.enums.MatchStatus;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -13,6 +14,9 @@ public interface MatchRepository extends CrudRepository<Match,ObjectId> {
     public Match findFirstById(ObjectId matchId);
 
     @Query(value = "{ 'tournamentId' : ?0 }")
-    public Match findAllEndMatchByTournament(ObjectId tournamentId);
+    public Iterable<Match> findAllEndMatchByTournament(ObjectId tournamentId);
+
+    @Query(value = "{ 'tournamentId' : ?0,  MatchStatus : ?1}")
+    public Iterable<Match> findCompletedMatch(ObjectId tournamentId, MatchStatus matchStatus);
 
 }

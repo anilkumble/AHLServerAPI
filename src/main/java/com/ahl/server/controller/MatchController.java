@@ -43,36 +43,28 @@ public class MatchController {
         return this.matchRepository.findAll();
     }
 
-    @RequestMapping("/men/matches")
-    public List<Match> getAllMensMatch() {
-        List<Match> mensMatch = new ArrayList<>();
+    @RequestMapping("/men/matches/{tournament}")
+    public List<Match> getAllMensMatch(@PathVariable Tournament tournament) {
         Iterable<Match> matches = this.matchRepository.findAll();
-        setTeamTagMap();
-        if(teamTagMap!=null) {
-            matches.forEach(match -> {
-                if(teamTagMap.get(match.getTeam1()).getCategory().equals(AHLConstants.MEN)){
-                    mensMatch.add(match);
-                }
-            });
-        }
-
-        return mensMatch;
+        return filterMatch(matches,AHLConstants.MEN);
     }
 
-    @RequestMapping("/women/matches")
-    public List<Match> getAllWomensMatch() {
-        List<Match> womensMatch = new ArrayList<>();
+    @RequestMapping("/women/matches/{tournament}")
+    public List<Match> getAllWomensMatch(@PathVariable Tournament tournament) {
         Iterable<Match> matches = this.matchRepository.findAll();
-        setTeamTagMap();
-        if(teamTagMap!=null) {
-            matches.forEach(match -> {
-                if(teamTagMap.get(match.getTeam1()).getCategory().equals(AHLConstants.WOMEN)){
-                    womensMatch.add(match);
-                }
-            });
-        }
+        return filterMatch(matches,AHLConstants.WOMEN);
+    }
 
-        return womensMatch;
+    @RequestMapping("/men/completed/matches/{tournament}")
+    public List<Match> getCompletedMensMatch(@PathVariable Tournament tournament) {
+        Iterable<Match> matches = this.matchRepository.findCompletedMatch(tournament.getId(), MatchStatus.COMPLETED);
+        return filterMatch(matches,AHLConstants.MEN);
+    }
+
+    @RequestMapping("/women/completed/matches/{tournament}")
+    public List<Match> getCompletedWomensMatch(@PathVariable Tournament tournament) {
+        Iterable<Match> matches = this.matchRepository.findCompletedMatch(tournament.getId(), MatchStatus.COMPLETED);
+        return filterMatch(matches,AHLConstants.WOMEN);
     }
 
     @PostMapping(path = "/match")
@@ -208,7 +200,7 @@ public class MatchController {
     @GetMapping(path = "/points/men/{tournament}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public List<Points> getMensPoint(@PathVariable Tournament tournament) {
 
-        Iterable<Match> matches = getAllMensMatch();
+        Iterable<Match> matches = getCompletedMensMatch(tournament);
         Map<ObjectId, Points> pointsTable = new HashMap<>();
 
         matches.forEach(match -> {
@@ -295,6 +287,20 @@ public class MatchController {
         teams.forEach(team -> {
             teamTagMap.put(team.getId(), team.getTeamTag());
         });
+    }
+
+    private List<Match> filterMatch(Iterable<Match> matches, String category){
+        List<Match> resultList = new ArrayList<>();
+        setTeamTagMap();
+        if(teamTagMap!=null) {
+            matches.forEach(match -> {
+                if(teamTagMap.get(match.getTeam1()).getCategory().equals(category)){
+                    resultList.add(match);
+                }
+            });
+        }
+
+        return resultList;
     }
 
 }
