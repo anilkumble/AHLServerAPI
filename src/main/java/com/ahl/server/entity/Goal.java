@@ -13,6 +13,8 @@ public class Goal {
     private ObjectId id;
     private ObjectId matchId;
     private ObjectId playerId;
+    private ObjectId forTeamId;
+    private ObjectId againstTeamId;
     private ObjectId tournamentId;
     public ObjectId getTournamentId() {
         return tournamentId;
@@ -20,6 +22,22 @@ public class Goal {
 
     public void setTournamentId(ObjectId tournamentId) {
         this.tournamentId = tournamentId;
+    }
+
+    public ObjectId getForTeamId() {
+        return forTeamId;
+    }
+
+    public void setForTeamId(ObjectId forTeamId) {
+        this.forTeamId = forTeamId;
+    }
+
+    public ObjectId getAgainstTeamId() {
+        return againstTeamId;
+    }
+
+    public void setAgainstTeamId(ObjectId againstTeamId) {
+        this.againstTeamId = againstTeamId;
     }
 
     public ObjectId getId() {

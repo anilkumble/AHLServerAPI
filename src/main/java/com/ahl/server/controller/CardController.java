@@ -3,9 +3,11 @@ package com.ahl.server.controller;
 import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Card;
-import com.ahl.server.entity.Goal;
+import com.ahl.server.enums.CardType;
 import com.ahl.server.repository.*;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -150,18 +152,70 @@ public class CardController {
     {
         return this.cardRepository.findAll();
     }
-    @RequestMapping(path = "cards/{tournamentId}/{id}")
-    public int getCardsByPlayer(@PathVariable ObjectId tournamentId,@PathVariable ObjectId id)
+    @RequestMapping(path = "cards/{tournamentId}/{playerId}")
+    public String getCardsByPlayer(@PathVariable ObjectId tournamentId, @PathVariable ObjectId playerId)
     {
-        List<Card> cards=this.cardRepository.findCardsByplayerId(id);
-//        for (Card c:cards)
-//        {
-//            ObjectId tId=AHLUtils.getTournamentByMatch(this.matchRepository,c.getMatchId());
-//            if(!tId.equals(tournamentId))
-//            {
-//                cards.remove(c);
-//            }
-//        }
-        return cards.size();
+        int greenCount=0, yellowCount=0, redCount=0;
+        List<Card> cards=this.cardRepository.findCardsByplayerId(playerId);
+        for (Card c:cards)
+        {
+            ObjectId tId=AHLUtils.getTournamentByMatch(this.matchRepository,c.getMatchId());
+            if(!tId.equals(tournamentId))
+            {
+            }
+            else {
+                if(c.getCardType()== CardType.GREEN)
+                {
+                    greenCount++;
+                }
+                else if(c.getCardType()== CardType.YELLOW)
+                {
+                    yellowCount++;
+                }
+                else {
+                    redCount++;
+                }
+            }
+        }
+        JsonObject j = new JsonObject();
+        int arr[]={0,0,0};
+
+        j.add("green", new JsonPrimitive(greenCount));
+        j.add("yellow", new JsonPrimitive(yellowCount));
+        j.add("red", new JsonPrimitive(redCount));
+        return j.toString();
+    }
+    @RequestMapping(path = "cards/{tournamentId}/{teamId}")
+    public String getCardsByPlayer1(@PathVariable ObjectId tournamentId, @PathVariable ObjectId teamId)
+    {
+        int greenCount=0, yellowCount=0, redCount=0;
+        List<Card> cards=this.cardRepository.findCardsByTeamId(teamId);
+        for (Card c:cards)
+        {
+            ObjectId tId=AHLUtils.getTournamentByMatch(this.matchRepository,c.getMatchId());
+            if(!tId.equals(tournamentId))
+            {
+            }
+            else {
+                if(c.getCardType()== CardType.GREEN)
+                {
+                    greenCount++;
+                }
+                else if(c.getCardType()== CardType.YELLOW)
+                {
+                    yellowCount++;
+                }
+                else {
+                    redCount++;
+                }
+            }
+        }
+        JsonObject j = new JsonObject();
+        int arr[]={0,0,0};
+
+        j.add("green", new JsonPrimitive(greenCount));
+        j.add("yellow", new JsonPrimitive(yellowCount));
+        j.add("red", new JsonPrimitive(redCount));
+        return j.toString();
     }
 }

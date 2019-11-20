@@ -278,13 +278,13 @@ public class MatchController {
 
         return null;
     }
-
-    private int getGoalsScoredByTeamId(ObjectId teamId) {
-        List<Goal> goals = goalRepository.findGoalsScoredByTeamId(teamId);
+    @RequestMapping("/goalscored/{teamId}")
+    private int getGoalsScoredByTeamId(@PathVariable ObjectId teamId) {
+        List<Goal> goals = this.goalRepository.findAllGoalsScoredByforTeamId(teamId);
         return goals.size();
     }
-
-    private int getGoalsAgainstByTeamId(ObjectId teamId) {
+    @RequestMapping("/goalagainst/{teamId}")
+    private int getGoalsAgainstByTeamId(@PathVariable ObjectId teamId) {
         List<Goal> goals = goalRepository.findGoalsAgainstByTeamId(teamId);
         return goals.size();
     }

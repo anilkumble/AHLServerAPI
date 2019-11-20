@@ -48,23 +48,15 @@ public class GoalController {
         return count;
     }
 
-    @RequestMapping("/testgoal/{id}")
-    public ResponseEntity<String> test(@PathVariable ObjectId id)
-    {
-        JsonObject response = new JsonObject();
-        try
-        {
-            ObjectId forTeamId=AHLUtils.getCurrentTeamByPlayer(playerTeamRepository,teamRepository,tournamentRepository,id);
-            System.out.println("test");
-            response.addProperty(AHLConstants.SUCCESS,forTeamId.toString());
-            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e)
-        {
-            response.addProperty(AHLConstants.ERROR,e.getMessage());
-            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @RequestMapping("/testgoal/{teamId}")
+//    public int test(@PathVariable ObjectId teamId)
+//    {
+//        JsonObject response = new JsonObject();
+//        int count=0;
+//        MatchController m =new MatchController();
+//        m.getGoalsScoredByTeamId(teamId);
+//        return count;
+//    }
 
     @PostMapping(path = "/goal")
     public ResponseEntity<String> addGoal(@RequestBody Goal goal)
@@ -80,6 +72,8 @@ public class GoalController {
                     ObjectId againstTeamId=getAgainstTeamId(goal.getMatchId(),forTeamId);
                     ObjectId tournamentId=matchRepository.findFirstById(goal.getMatchId()).getTournamentId();
                     goal.setTournamentId(tournamentId);
+                    goal.setForTeamId(forTeamId);
+                    goal.setAgainstTeamId(againstTeamId);
                     if(this.goalRepository.save(goal)!=null)
                     {
                         response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
@@ -151,6 +145,8 @@ public class GoalController {
                         oldGoal.setPlayerId(goal.getPlayerId());
                         ObjectId tournamentId=matchRepository.findFirstById(goal.getMatchId()).getTournamentId();
                         oldGoal.setTournamentId(tournamentId);
+                        oldGoal.setForTeamId(forTeamId);
+                        oldGoal.setAgainstTeamId(againstTeamId);
                         if(this.goalRepository.save(oldGoal)!=null)
                         {
                             response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_UPDATED);
