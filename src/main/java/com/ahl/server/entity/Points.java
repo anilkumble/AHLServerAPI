@@ -6,8 +6,8 @@ public class Points {
 
     private ObjectId teamId;
     private String teamName;
-    private int position;
     private String teamLogo;
+    private int position;
     private int points;
     private int goalScored;
     private int goalAgainst;

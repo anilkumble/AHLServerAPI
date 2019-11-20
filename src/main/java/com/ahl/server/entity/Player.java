@@ -103,14 +103,13 @@ public class Player {
     }
 
     public static void validatePlayer(Player player) throws Exception {
-        if (!ObjectUtils.allNotNull(player.getName(), player.getEmailId())
-                || ObjectUtils.isEmpty(player.getName())) {
+        if (!ObjectUtils.allNotNull(player.getName(), player.getPosition())
+                || ObjectUtils.isEmpty(player.getName()) || ObjectUtils.isEmpty(player.getPosition())) {
 
             Map<String, String> substitueMap = new HashMap<>();
-            substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.NAME, AHLConstants.EMAIL_ID}));
+            substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.NAME, AHLConstants.POSITION}));
             throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
         }
-        AHLUtils.isValidEmailAddress(player.getEmailId());
     }
 
     @Override

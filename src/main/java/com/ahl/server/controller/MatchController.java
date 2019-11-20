@@ -169,8 +169,8 @@ public class MatchController {
         if(match != null){
 
             int result =  Integer.parseInt((String)Objects.requireNonNull(data.getFirst("result")));
-            ObjectId mom = (ObjectId)Objects.requireNonNull(data.getFirst("mom"));
-            ObjectId buddingPlayer = (ObjectId)Objects.requireNonNull(data.getFirst("buddingPlayer"));
+            ObjectId mom = new ObjectId((String)Objects.requireNonNull(data.getFirst("mom")));
+            ObjectId buddingPlayer = new ObjectId((String)Objects.requireNonNull(data.getFirst("buddingPlayer")));
 
             ResponseEntity<String> responseEntity = validateMatchData(match, result, mom, buddingPlayer);
             if(responseEntity!=null){
@@ -197,20 +197,28 @@ public class MatchController {
         }
     }
 
-    @GetMapping(path = "/points/men/{tournament}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @GetMapping(path = "/points/men/{tournament}")
     public List<Points> getMensPoint(@PathVariable Tournament tournament) {
 
         Iterable<Match> matches = getCompletedMensMatch(tournament);
         Map<ObjectId, Points> pointsTable = new HashMap<>();
 
-        matches.forEach(match -> {
-            Points team1Point = pointsTable.get(match.getTeam1());
-            Points team2Point = pointsTable.get(match.getTeam2());
+        for(Match match : matches){
+            Team team1 = this.teamRepository.findFirstById(match.getTeam1());
+            Team team2 = this.teamRepository.findFirstById(match.getTeam2());
+            Points team1Point = pointsTable.get(team1.getId());
+            Points team2Point = pointsTable.get(team2.getId());
             if(team1Point==null){
                 team1Point = new Points();
+                team1Point.setTeamId(team1.getId());
+                team1Point.setTeamName(team1.getName());
+                pointsTable.put(team1.getId(),team1Point);
             }
             if(team2Point==null){
                 team2Point = new Points();
+                team2Point.setTeamId(team2.getId());
+                team2Point.setTeamName(team2.getName());
+                pointsTable.put(team2.getId(),team2Point);
             }
 
             int result = match.getResult();
@@ -227,7 +235,7 @@ public class MatchController {
                 team1Point.increaseDraw();
                 team2Point.increaseDraw();
             }
-        });
+        }
 
         for (Map.Entry<ObjectId, Points> entry : pointsTable.entrySet()) {
             Points points = entry.getValue();
@@ -235,11 +243,11 @@ public class MatchController {
             points.setGoalAgainst(getGoalsAgainstByTeamId(entry.getKey()));
         }
         List<Points> pointsList = new ArrayList(pointsTable.values());
-        Collections.sort(pointsList, new PointsComparator());
+        pointsList.sort(new PointsComparator());
 
         int position=1;
         for(Points points:pointsList){
-            points.setPoints(position);
+            points.setPosition(position);
             position++;
         }
 
@@ -263,7 +271,7 @@ public class MatchController {
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
 
-        if(!(result==0 || result==1 || result==2)){
+        if(!(result==0 || result==1 || result==-1)){
             response.addProperty(AHLConstants.ERROR_MSG, "Invalid result should be 1, -1 or 0");
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
         }
@@ -293,11 +301,11 @@ public class MatchController {
         List<Match> resultList = new ArrayList<>();
         setTeamTagMap();
         if(teamTagMap!=null) {
-            matches.forEach(match -> {
+            for(Match match : matches){
                 if(teamTagMap.get(match.getTeam1()).getCategory().equals(category)){
                     resultList.add(match);
                 }
-            });
+            }
         }
 
         return resultList;

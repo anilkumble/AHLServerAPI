@@ -16,7 +16,7 @@ public interface MatchRepository extends CrudRepository<Match,ObjectId> {
     @Query(value = "{ 'tournamentId' : ?0 }")
     public Iterable<Match> findAllEndMatchByTournament(ObjectId tournamentId);
 
-    @Query(value = "{ 'tournamentId' : ?0,  MatchStatus : ?1}")
+    @Query(value = "{ 'tournamentId' : ?0,  'status' : ?1}")
     public Iterable<Match> findCompletedMatch(ObjectId tournamentId, MatchStatus matchStatus);
 
 }
