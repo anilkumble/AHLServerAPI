@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class CardController {
@@ -66,5 +68,100 @@ public class CardController {
             response.addProperty(AHLConstants.ERROR,e.getMessage());
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
+    }
+    @DeleteMapping(path = "/card/{id}")
+    public ResponseEntity<String> deleteCard(@PathVariable ObjectId id)
+    {
+        JsonObject response=new JsonObject();
+        try {
+            Card oldCard=this.cardRepository.findFirstById(id);
+            if(oldCard!=null)
+            {
+                this.cardRepository.delete(oldCard);
+                response.addProperty(AHLConstants.SUCCESS, AHLConstants.CARD_DELETED);
+                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+            }
+            else
+            {
+                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        catch (Exception e)
+        {
+            response.addProperty(AHLConstants.ERROR,e.getMessage());
+            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PutMapping(path="/card/{id}")
+    public ResponseEntity<String> editCard(@RequestBody Card card,@PathVariable ObjectId id)
+    {
+        JsonObject response=new JsonObject();
+        try{
+            if(card.validateCard(card))
+            {
+                Card oldCard=this.cardRepository.findFirstById(id);
+                if(oldCard!=null)
+                {
+                    if(AHLUtils.isPlayerExist(playerRepository,card.getPlayerId()) && AHLUtils.isMatchExist(matchRepository,card.getMatchId()))
+                    {
+                        ObjectId playerForTeamId=AHLUtils.getCurrentTeamByPlayer(playerTeamRepository,teamRepository,tournamentRepository,card.getPlayerId());
+                        card.setForTeamId(playerForTeamId);
+                        oldCard.setForTeamId(card.getForTeamId());
+                        oldCard.setCardType(card.getCardType());
+                        oldCard.setPlayerId(card.getPlayerId());
+                        oldCard.setMatchId(card.getMatchId());
+                        if(this.cardRepository.save(oldCard)!=null)
+                        {
+                            response.addProperty(AHLConstants.SUCCESS, AHLConstants.CARD_UPDATED);
+                            return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                        }
+                        else{
+                            response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                            return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+                    }
+                    else
+                    {
+                        response.addProperty(AHLConstants.ERROR, "Invalid Player/Match");
+                        return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
+                    }
+                }
+                else
+                {
+                    response.addProperty(AHLConstants.ERROR, "Card not found");
+                    return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
+                }
+            }
+            else {
+                response.addProperty(AHLConstants.ERROR,"Minimum required fields not met");
+                return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
+            }
+
+        }
+        catch (Exception e)
+        {
+            response.addProperty(AHLConstants.ERROR,e.getMessage());
+            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @RequestMapping(path = "/cards")
+    public Iterable<Card> getAllCards()
+    {
+        return this.cardRepository.findAll();
+    }
+    @RequestMapping(path = "cards/{tournamentId}/{id}")
+    public int getCardsByPlayer(@PathVariable ObjectId tournamentId,@PathVariable ObjectId id)
+    {
+        List<Card> cards=this.cardRepository.findCardsByplayerId(id);
+//        for (Card c:cards)
+//        {
+//            ObjectId tId=AHLUtils.getTournamentByMatch(this.matchRepository,c.getMatchId());
+//            if(!tId.equals(tournamentId))
+//            {
+//                cards.remove(c);
+//            }
+//        }
+        return cards.size();
     }
 }
