@@ -152,7 +152,7 @@ public class CardController {
     {
         return this.cardRepository.findAll();
     }
-    @RequestMapping(path = "cards/{tournamentId}/{playerId}")
+    @RequestMapping(path = "player/cards/{tournamentId}/{playerId}")
     public String getCardsByPlayer(@PathVariable ObjectId tournamentId, @PathVariable ObjectId playerId)
     {
         int greenCount=0, yellowCount=0, redCount=0;
@@ -178,15 +178,13 @@ public class CardController {
             }
         }
         JsonObject j = new JsonObject();
-        int arr[]={0,0,0};
-
         j.add("green", new JsonPrimitive(greenCount));
         j.add("yellow", new JsonPrimitive(yellowCount));
         j.add("red", new JsonPrimitive(redCount));
         return j.toString();
     }
-    @RequestMapping(path = "cards/{tournamentId}/{teamId}")
-    public String getCardsByPlayer1(@PathVariable ObjectId tournamentId, @PathVariable ObjectId teamId)
+    @RequestMapping(path = "team/cards/{tournamentId}/{teamId}")
+    public String getCardsByTeam(@PathVariable ObjectId tournamentId, @PathVariable ObjectId teamId)
     {
         int greenCount=0, yellowCount=0, redCount=0;
         List<Card> cards=this.cardRepository.findCardsByTeamId(teamId);
@@ -211,8 +209,6 @@ public class CardController {
             }
         }
         JsonObject j = new JsonObject();
-        int arr[]={0,0,0};
-
         j.add("green", new JsonPrimitive(greenCount));
         j.add("yellow", new JsonPrimitive(yellowCount));
         j.add("red", new JsonPrimitive(redCount));
