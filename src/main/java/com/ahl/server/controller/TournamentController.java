@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController()
@@ -30,19 +31,9 @@ public class TournamentController {
   }
 
   @PostMapping(path = "/tournament")
-  public ResponseEntity<String> addTournament(@RequestBody Tournament tournament) {
-    JsonObject response = new JsonObject();
-
-    try {
-      Tournament.validateTournament(tournament);
-    }catch (Exception ex) {
-      response.addProperty(AHLConstants.ERROR,ex.getMessage());
-      return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
-    }
+  public ResponseEntity<String> addTournament(@Valid  @RequestBody Tournament tournament) {
     this.tournamentRepository.save(tournament);
-    response.addProperty(AHLConstants.SUCCESS, AHLConstants.TOURNAMENT_CREATED);
-    return new ResponseEntity<String>(response.toString(),null, HttpStatus.OK);
-
+    return new ResponseEntity<String>(AHLConstants.TOURNAMENT_CREATED, HttpStatus.OK);
   }
 
   @PutMapping(path="/tournament/{oldTournament}")
