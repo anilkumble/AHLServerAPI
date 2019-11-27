@@ -7,6 +7,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +19,15 @@ public class Tournament {
 
     @Id
     private ObjectId id;
+
+    @NotNull
+    @NotEmpty
     private String season;
+
     private String theme;
+
+    @NotEmpty
+    @NotNull
     private String tagline;
     private String tournamentLogo;
     private boolean isLive = true;
