@@ -16,9 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
-@RestController
+@RestController()
 @RequestMapping("/api")
 public class GoalController {
     @Autowired
@@ -59,7 +60,7 @@ public class GoalController {
 //    }
 
     @PostMapping(path = "/goal")
-    public ResponseEntity<String> addGoal(@RequestBody Goal goal)
+    public ResponseEntity<String> addGoal(@Valid @RequestBody Goal goal)
     {
         JsonObject response = new JsonObject();
         try

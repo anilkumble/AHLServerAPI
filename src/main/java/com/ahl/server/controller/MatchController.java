@@ -289,6 +289,10 @@ public class MatchController {
         return goals.size();
     }
 
+    private int getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
+        List<Goal> goals = goalRepository.findGoalsByTeamInMatch(matchId,teamId);
+        return goals.size();
+    }
     private void setTeamTagMap() {
         Iterable<Team> teams = this.teamRepository.findAll();
         teamTagMap = new HashMap<>();
