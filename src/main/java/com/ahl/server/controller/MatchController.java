@@ -5,19 +5,21 @@ import com.ahl.server.AHLUtils;
 import com.ahl.server.comparator.PointsComparator;
 import com.ahl.server.entity.*;
 import com.ahl.server.enums.MatchStatus;
-import com.ahl.server.enums.TeamTag;
 import com.ahl.server.repository.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -34,37 +36,23 @@ public class MatchController {
     private GoalRepository goalRepository;
     @Autowired
     private PlayerTeamRepository playerTeamRepository;
+    @Autowired
+    private PlayerRepository playerRepository;
 
-    private Map<ObjectId, TeamTag> teamTagMap;
 
+    private Map<ObjectId, Team> teamTagMap;
 
     @RequestMapping("/matches")
-    public Iterable<Match> getAllMatches() {
-        return this.matchRepository.findAll();
-    }
+    public ResponseEntity<String> getAllMatches(@RequestParam Tournament tournament, @RequestParam String category) {
 
-    @RequestMapping("/men/matches/{tournament}")
-    public List<Match> getAllMensMatch(@PathVariable Tournament tournament) {
-        Iterable<Match> matches = this.matchRepository.findAll();
-        return filterMatch(matches,AHLConstants.MEN);
-    }
+        if(category.equals(AHLConstants.MEN) || category.equals(AHLConstants.WOMEN) || category.equals(AHLConstants.ALL)){
+            Iterable<Match> matches = this.matchRepository.findAllMatchByTournament(tournament.getId());
+            return new ResponseEntity<String>(getMatchResult(matches, category).toString(), null, HttpStatus.OK);
+        }
 
-    @RequestMapping("/women/matches/{tournament}")
-    public List<Match> getAllWomensMatch(@PathVariable Tournament tournament) {
-        Iterable<Match> matches = this.matchRepository.findAll();
-        return filterMatch(matches,AHLConstants.WOMEN);
-    }
-
-    @RequestMapping("/men/completed/matches/{tournament}")
-    public List<Match> getCompletedMensMatch(@PathVariable Tournament tournament) {
-        Iterable<Match> matches = this.matchRepository.findCompletedMatch(tournament.getId(), MatchStatus.COMPLETED);
-        return filterMatch(matches,AHLConstants.MEN);
-    }
-
-    @RequestMapping("/women/completed/matches/{tournament}")
-    public List<Match> getCompletedWomensMatch(@PathVariable Tournament tournament) {
-        Iterable<Match> matches = this.matchRepository.findCompletedMatch(tournament.getId(), MatchStatus.COMPLETED);
-        return filterMatch(matches,AHLConstants.WOMEN);
+        JsonObject response = new JsonObject();
+        response.addProperty(AHLConstants.ERROR, "category should ne men or women or all");
+        return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping(path = "/match")
@@ -72,14 +60,20 @@ public class MatchController {
         JsonObject response = new JsonObject();
         try {
             Match.validateMatch(match);
-            Date matchDate = match.getMatchDateTime();
-            if(!AHLUtils.isFutureDate(matchDate)){
-                response.addProperty(AHLConstants.ERROR, "Date is not valid "+matchDate);
+            long matchDate = match.getMatchDateTime();
+            if(!AHLUtils.isFutureDate(matchDate)) {
+                response.addProperty(AHLConstants.ERROR, "Date is not valid " + matchDate);
                 return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            if (AHLUtils.isTeamExist(teamRepository, match.getTeam1()) && AHLUtils.isTeamExist(teamRepository, match.getTeam2())
-                    && AHLUtils.isTournamentExist(tournamentRepository, match.getTournamentId()) && !match.getTeam2().equals(match.getTeam1())
+            Team team1 = this.teamRepository.findFirstById(match.getTeam1());
+            Team team2 = this.teamRepository.findFirstById(match.getTeam2());
+
+            if (team1!=null
+                    && team2!=null
+                    && AHLUtils.isTournamentExist(tournamentRepository, match.getTournamentId())
+                    && !match.getTeam2().equals(match.getTeam1())
                     && !ObjectUtils.isEmpty(match.getResult())
+                    && team1.getTeamTag().getCategory().equals(team2.getTeamTag().getCategory())
             ) {
                 match.setStatus(MatchStatus.UPCOMING);
                 if (this.matchRepository.save(match) != null) {
@@ -130,10 +124,9 @@ public class MatchController {
         }
     }
 
-    @DeleteMapping(path = "/match/{id}")
-    public ResponseEntity<String> deleteMatch(@PathVariable ObjectId id) {
+    @DeleteMapping(path = "/match/{oldMatch}")
+    public ResponseEntity<String> deleteMatch(@PathVariable Match oldMatch) {
         JsonObject response = new JsonObject();
-        Match oldMatch = this.matchRepository.findFirstById(id);
         if (oldMatch != null) {
             this.matchRepository.delete(oldMatch);
             response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_DELETED);
@@ -144,63 +137,24 @@ public class MatchController {
         }
     }
 
-    @PostMapping(path = "/start-match/{match}")
-    public ResponseEntity<String> startMatch(@PathVariable Match match) {
+    @PostMapping(path = "/match/{match}")
+    public ResponseEntity<String> triggerMatch(@PathVariable Match match, @RequestParam String action) {
+
         JsonObject response = new JsonObject();
-        if(match != null){
-            match.setStatus(MatchStatus.LIVE_MATCH);
-            if(matchRepository.save(match) != null) {
-                response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_STARTED);
-                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
-            }else{
-                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
-                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
-            }
-        }
-        else{
-            response.addProperty(AHLConstants.ERROR, AHLConstants.PLAYER_NOT_FOUND);
+        response.addProperty(AHLConstants.ERROR, "Invalid action should be start or end");
+        if (action.equals(AHLConstants.START)) {
+            return startMatch(match);
+        }else if (action.equals(AHLConstants.END)){
+            return endMatch(match);
+        }else{
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PostMapping(path = "/end-match/{match}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<String> endMatch(@PathVariable Match match, @RequestBody MultiValueMap<String,Object> data) {
-        JsonObject response = new JsonObject();
-        if(match != null){
+    @GetMapping(path = "/points")
+    public List<Points> getPoints(@RequestParam Tournament tournament, @RequestParam String category) {
 
-            int result =  Integer.parseInt((String)Objects.requireNonNull(data.getFirst("result")));
-            ObjectId mom = new ObjectId((String)Objects.requireNonNull(data.getFirst("mom")));
-            ObjectId buddingPlayer = new ObjectId((String)Objects.requireNonNull(data.getFirst("buddingPlayer")));
-
-            ResponseEntity<String> responseEntity = validateMatchData(match, result, mom, buddingPlayer);
-            if(responseEntity!=null){
-                return responseEntity;
-            }
-
-            match.setResult(result);
-            match.setStatus(MatchStatus.COMPLETED);
-            match.setMom(mom);
-            match.setBuddingPlayer(buddingPlayer);
-
-            if (matchRepository.save(match) != null) {
-                response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_ENDED);
-                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
-            } else {
-                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
-                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
-            }
-
-        }
-        else{
-            response.addProperty(AHLConstants.ERROR, AHLConstants.PLAYER_NOT_FOUND);
-            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping(path = "/points/men/{tournament}")
-    public List<Points> getMensPoint(@PathVariable Tournament tournament) {
-
-        Iterable<Match> matches = getCompletedMensMatch(tournament);
+        Iterable<Match> matches = this.matchRepository.findCompletedMatch(tournament.getId(), MatchStatus.COMPLETED);
         Map<ObjectId, Points> pointsTable = new HashMap<>();
 
         for(Match match : matches){
@@ -239,8 +193,11 @@ public class MatchController {
 
         for (Map.Entry<ObjectId, Points> entry : pointsTable.entrySet()) {
             Points points = entry.getValue();
-            points.setGoalScored(getGoalsScoredByTeamId(entry.getKey()));
-            points.setGoalAgainst(getGoalsAgainstByTeamId(entry.getKey()));
+            int gs = getGoalsScoredByTeamId(entry.getKey());
+            int ga = getGoalsAgainstByTeamId(entry.getKey());
+            points.setGoalScored(gs);
+            points.setGoalAgainst(ga);
+            points.setGoalDifference(gs-ga);
         }
         List<Points> pointsList = new ArrayList(pointsTable.values());
         pointsList.sort(new PointsComparator());
@@ -254,30 +211,6 @@ public class MatchController {
         return pointsList;
 
     }
-
-    private ResponseEntity<String> validateMatchData(Match match, int result, ObjectId mom, ObjectId buddingPlayer) {
-        JsonObject response = new JsonObject();
-
-
-        if(!AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), mom)
-                && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), mom)){
-            response.addProperty(AHLConstants.ERROR, "Man of the player not found in either of teams");
-            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
-        }
-
-        if(!AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), buddingPlayer)
-                && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), buddingPlayer)){
-            response.addProperty(AHLConstants.ERROR, "Budding player not found in either of teams");
-            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
-        }
-
-        if(!(result==0 || result==1 || result==-1)){
-            response.addProperty(AHLConstants.ERROR_MSG, "Invalid result should be 1, -1 or 0");
-            return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
-        }
-
-        return null;
-    }
     @RequestMapping("/goalscored/{teamId}")
     private int getGoalsScoredByTeamId(@PathVariable ObjectId teamId) {
         List<Goal> goals = this.goalRepository.findAllGoalsScoredByforTeamId(teamId);
@@ -289,6 +222,80 @@ public class MatchController {
         return goals.size();
     }
 
+    private ResponseEntity<String> startMatch(Match match) {
+        JsonObject response = new JsonObject();
+        HttpStatus status = HttpStatus.OK;
+
+        if (match.getStatus() == MatchStatus.UPCOMING) {
+            match.setStatus(MatchStatus.LIVE_MATCH);
+            if (matchRepository.save(match) != null) {
+                response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_STARTED);
+
+            } else {
+                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+            }
+        } else {
+            response.addProperty(AHLConstants.ERROR, "Match has already completed");
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<String>(response.toString(), null, status);
+    }
+
+    private ResponseEntity<String> endMatch(Match match) {
+        JsonObject response = new JsonObject();
+        if(match != null
+                && match.getMom()!= null
+                && match.getBuddingPlayer() != null){
+
+            ResponseEntity<String> responseEntity = validateMatchData(match);
+            if(responseEntity!=null){
+                return responseEntity;
+            }
+
+            match.setStatus(MatchStatus.COMPLETED);
+
+            if (matchRepository.save(match) != null) {
+                response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_ENDED);
+                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+            } else {
+                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        else{
+            response.addProperty(AHLConstants.ERROR, AHLConstants.PLAYER_NOT_FOUND);
+            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private ResponseEntity<String> validateMatchData(Match match) {
+        JsonObject response = new JsonObject();
+
+        ObjectId mom = match.getMom();
+        ObjectId buddingPlayer = match.getBuddingPlayer();
+        int result = match.getResult();
+
+        if(!AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), mom)
+                && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam2(), mom)){
+            response.addProperty(AHLConstants.ERROR, "Man of the player not found in either of teams");
+            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+        }
+
+        if(!AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), buddingPlayer)
+                && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam2(), buddingPlayer)){
+            response.addProperty(AHLConstants.ERROR, "Budding player not found in either of teams");
+            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+        }
+
+        if(!(result==0 || result==1 || result==-1)){
+            response.addProperty(AHLConstants.ERROR_MSG, "Invalid result should be 1, -1 or 0");
+            return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+        }
+
+        return null;
+    }
+
     private int getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
         List<Goal> goals = goalRepository.findGoalsByTeamInMatch(matchId,teamId);
         return goals.size();
@@ -297,22 +304,47 @@ public class MatchController {
         Iterable<Team> teams = this.teamRepository.findAll();
         teamTagMap = new HashMap<>();
         teams.forEach(team -> {
-            teamTagMap.put(team.getId(), team.getTeamTag());
+            teamTagMap.put(team.getId(), team);
         });
     }
 
-    private List<Match> filterMatch(Iterable<Match> matches, String category){
+
+    private List<Match> getMatchesByCategory(Iterable<Match> matches, String category) {
         List<Match> resultList = new ArrayList<>();
         setTeamTagMap();
-        if(teamTagMap!=null) {
-            for(Match match : matches){
-                if(teamTagMap.get(match.getTeam1()).getCategory().equals(category)){
+        if (teamTagMap != null) {
+            for (Match match : matches) {
+                if (teamTagMap.get(match.getTeam1()).getTeamTag().getCategory().equals(category)) {
                     resultList.add(match);
                 }
             }
         }
-
         return resultList;
+    }
+
+    private JsonArray getMatchResult(Iterable<Match> matches, String category){
+        JsonArray resultArray = new JsonArray();
+        Gson gson = new Gson();
+        List<Match> matchList = getMatchesByCategory(matches, category);
+        if(teamTagMap!=null) {
+            for(Match match : matchList) {
+                Team team1 = teamTagMap.get(match.getTeam1());
+                Team team2 = teamTagMap.get(match.getTeam2());
+
+                JsonObject matchJson = gson.fromJson(gson.toJson(match), JsonObject.class);
+                matchJson.addProperty("team1Name", team1.getName());
+                matchJson.addProperty("team2Name", team2.getName());
+                if (match.getStatus().equals(MatchStatus.COMPLETED)) {
+                    matchJson.addProperty("team1Goal", getGoalsByTeamInMatch(match.getId(), match.getTeam1()));
+                    matchJson.addProperty("team2Goal", getGoalsByTeamInMatch(match.getId(), match.getTeam2()));
+                    matchJson.addProperty("mom", this.playerRepository.findFirstById(match.getMom()).getName());
+                    matchJson.addProperty("buddingPlayer", this.playerRepository.findFirstById(match.getBuddingPlayer()).getName());
+                }
+                resultArray.add(matchJson);
+
+            }
+        }
+        return resultArray;
     }
 
 }

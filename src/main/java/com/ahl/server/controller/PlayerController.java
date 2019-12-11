@@ -86,6 +86,24 @@ public class PlayerController {
     }
   }
 
+  @PostMapping(path = "/bulk/player")
+  public ResponseEntity<String> addBulkPlayer(@RequestBody Player player){
+    JsonObject response = new JsonObject();
+    try {
+      Player.validatePlayer(player);
+      if(this.playerRepository.save(player) != null) {
+        response.addProperty(AHLConstants.SUCCESS, player.toString());
+        return new ResponseEntity<String>(player.getId().toString(), null, HttpStatus.OK);
+      }else{
+        response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+        return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }catch (Exception ex){
+      response.addProperty(AHLConstants.ERROR,ex.getMessage());
+      return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @PutMapping(path="/player/{oldPlayer}")
   public ResponseEntity<String> editPlayer(@RequestBody Player player, @PathVariable Player oldPlayer){
     JsonObject response = new JsonObject();

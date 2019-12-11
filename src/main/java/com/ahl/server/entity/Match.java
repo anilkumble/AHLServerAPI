@@ -1,13 +1,12 @@
 package com.ahl.server.entity;
 
 import com.ahl.server.enums.MatchStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.util.StringJoiner;
 
 @Document(collection = "matches")
 public class Match {
@@ -19,13 +18,12 @@ public class Match {
     private ObjectId mom;
     private ObjectId buddingPlayer;
 
-    private String round;
     private String timer;
+    private String timerStatus;
     private int result;
     private MatchStatus status;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date matchDateTime;
+    private long matchDateTime;
 
 
     public Match(ObjectId team1, ObjectId team2, ObjectId tournamentId) {
@@ -82,11 +80,11 @@ public class Match {
         this.result = result;
     }
 
-    public Date getMatchDateTime() {
+    public long getMatchDateTime() {
         return matchDateTime;
     }
 
-    public void setMatchDateTime(Date matchDateTime) {
+    public void setMatchDateTime(long matchDateTime) {
         this.matchDateTime = matchDateTime;
     }
 
@@ -107,12 +105,11 @@ public class Match {
     }
 
     public static boolean validateMatch(Match match) {
-        if(!ObjectUtils.allNotNull(match.getTeam1(),match.getTeam2(),match.getTournamentId())
+        if (!ObjectUtils.allNotNull(match.getTeam1(), match.getTeam2(), match.getTournamentId())
                 || ObjectUtils.isEmpty(match.getTeam1())
                 || ObjectUtils.isEmpty(match.getTeam2())
                 || ObjectUtils.isEmpty(match.getTournamentId())
-                || ObjectUtils.isEmpty(match.getMatchDateTime()))
-        {
+                || ObjectUtils.isEmpty(match.getMatchDateTime())) {
             return false;
         }
         return true;

@@ -23,9 +23,8 @@ public class AHLUtils {
         throw new InvalidDataException(AHLConstants.INVALID_DATA, substitueMap);
     }
 
-    public static boolean isFutureDate(Date date){
-        Date currentDate = new Date(System.currentTimeMillis() - 1000*60*60*24);
-        return date.after(currentDate);
+    public static boolean isFutureDate(long timestamp){
+        return System.currentTimeMillis() > timestamp;
 
     }
 
@@ -100,6 +99,6 @@ public class AHLUtils {
 
     public static boolean isCurrentTournament(TournamentRepository tournamentRepository, ObjectId id) {
         Tournament tournament = tournamentRepository.findFirstById(id);
-        return tournament.getIsLive();
+        return tournament.isLive();
     }
 }

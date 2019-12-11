@@ -24,5 +24,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.1.4.RELEASE'
-    
+
+    // https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor
+    compile group: 'com.typesafe.akka', name: 'akka-actor_2.13', version: '2.6.0'
 }

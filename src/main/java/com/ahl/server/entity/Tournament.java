@@ -1,17 +1,10 @@
 package com.ahl.server.entity;
 
-import com.ahl.server.AHLConstants;
-import com.ahl.server.exception.InSufficientDataException;
-import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringJoiner;
 
 @Document(collection = "tournaments")
@@ -20,21 +13,21 @@ public class Tournament {
     @Id
     private ObjectId id;
 
-    @NotNull
     @NotEmpty
     private String season;
 
+    @NotEmpty
     private String theme;
 
     @NotEmpty
-    @NotNull
-    private String tagline;
-    private String tournamentLogo;
-    private boolean isLive = true;
+    private String tagLine;
 
-    public String getSeason() {
-        return season;
-    }
+    @NotEmpty
+    private String tournamentName;
+
+    private String tournamentLogo;
+
+    private boolean isLive = true;
 
     public ObjectId getId() {
         return id;
@@ -42,6 +35,10 @@ public class Tournament {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public String getSeason() {
+        return season;
     }
 
     public void setSeason(String season) {
@@ -56,20 +53,20 @@ public class Tournament {
         this.theme = theme;
     }
 
-    public String getTagline() {
-        return tagline;
+    public String getTagLine() {
+        return tagLine;
     }
 
-    public void setTagline(String tagline) {
-        this.tagline = tagline;
+    public void setTagLine(String tagLine) {
+        this.tagLine = tagLine;
     }
 
-    public boolean getIsLive() {
-        return isLive;
+    public String getTournamentName() {
+        return tournamentName;
     }
 
-    public void setIsLive(boolean live) {
-        isLive = live;
+    public void setTournamentName(String tournamentName) {
+        this.tournamentName = tournamentName;
     }
 
     public String getTournamentLogo() {
@@ -80,15 +77,12 @@ public class Tournament {
         this.tournamentLogo = tournamentLogo;
     }
 
-    public static void validateTournament(Tournament tournament) throws InSufficientDataException {
+    public boolean isLive() {
+        return isLive;
+    }
 
-        if (!ObjectUtils.allNotNull(tournament.getSeason(), tournament.getTagline())
-                || ObjectUtils.isEmpty(tournament.getSeason())
-                || ObjectUtils.isEmpty(tournament.getTagline())) {
-            Map<String, String> substitueMap = new HashMap<>();
-            substitueMap.put("fields", Arrays.toString(new Object[]{AHLConstants.SEASON, AHLConstants.TAG_LINE}));
-            throw new InSufficientDataException(AHLConstants.MINIMUM_REQUIRED_FIELDS, substitueMap);
-        }
+    public void setLive(boolean live) {
+        isLive = live;
     }
 
     @Override
@@ -97,7 +91,10 @@ public class Tournament {
                 .add("id=" + id)
                 .add("season='" + season + "'")
                 .add("theme='" + theme + "'")
-                .add("tagline='" + tagline + "'")
+                .add("tagLine='" + tagLine + "'")
+                .add("tournamentName='" + tournamentName + "'")
+                .add("tournamentLogo='" + tournamentLogo + "'")
+                .add("isLive=" + isLive)
                 .toString();
     }
 }

@@ -1,13 +1,11 @@
 package com.ahl.server.controller;
 
-import com.ahl.server.entity.Player;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
 import com.ahl.server.entity.Tournament;
 import com.ahl.server.repository.TournamentRepository;
 
-import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +28,13 @@ public class TournamentController {
     return tournamentRepository.findAll();
   }
 
+  @GetMapping("/tournament")
+  public Tournament getLiveTournament(@RequestParam boolean status){
+    return tournamentRepository.findLiveTournament(status);
+  }
+
   @PostMapping(path = "/tournament")
-  public ResponseEntity<String> addTournament(@Valid  @RequestBody Tournament tournament) {
+  public ResponseEntity<String> addTournament(@Valid @RequestBody Tournament tournament) {
     this.tournamentRepository.save(tournament);
     return new ResponseEntity<String>(AHLConstants.TOURNAMENT_CREATED, HttpStatus.OK);
   }
@@ -41,12 +44,13 @@ public class TournamentController {
     JsonObject response = new JsonObject();
     if(oldTournament != null) {
       oldTournament.setSeason(tournament.getSeason());
-      oldTournament.setTagline(tournament.getTagline());
+      oldTournament.setTagLine(tournament.getTagLine());
       oldTournament.setTheme(tournament.getTheme());
-      oldTournament.setIsLive(tournament.getIsLive());
+      oldTournament.setLive(tournament.isLive());
+      oldTournament.setTournamentName(tournament.getTournamentName());
 
       try {
-        Tournament.validateTournament(oldTournament);
+//        Tournament.validateTournament(oldTournament);
       }catch (Exception ex){
         response.addProperty(AHLConstants.ERROR,ex.getMessage());
         return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);

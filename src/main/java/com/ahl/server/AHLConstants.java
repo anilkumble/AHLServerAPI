@@ -23,10 +23,12 @@ public class AHLConstants {
 
   /*TeamTag category */
   public static final String MEN            = "men";
+  public static final String ALL            = "all";
   public static final String WOMEN          = "women";
   public static final String OTHER          = "other";
 
-
+  public static final String START  = "start";
+  public static final String END    = "end";
 
   /*To throw exception*/
   public static final String MINIMUM_REQUIRED_FIELDS = "Minimum Required Fields are ${fields}";
