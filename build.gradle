@@ -27,4 +27,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor
     compile group: 'com.typesafe.akka', name: 'akka-actor_2.13', version: '2.6.0'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    compile group: 'org.json', name: 'json', version: '20190722'
+
 }

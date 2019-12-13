@@ -24,7 +24,7 @@ public class AHLUtils {
     }
 
     public static boolean isFutureDate(long timestamp){
-        return System.currentTimeMillis() > timestamp;
+        return System.currentTimeMillis() < timestamp;
 
     }
 

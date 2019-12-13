@@ -45,14 +45,22 @@ public class MatchController {
     @RequestMapping("/matches")
     public ResponseEntity<String> getAllMatches(@RequestParam Tournament tournament, @RequestParam String category) {
 
-        if(category.equals(AHLConstants.MEN) || category.equals(AHLConstants.WOMEN) || category.equals(AHLConstants.ALL)){
+        ResponseEntity<String> response = validateCategory(category);
+        if(response==null){
             Iterable<Match> matches = this.matchRepository.findAllMatchByTournament(tournament.getId());
             return new ResponseEntity<String>(getMatchResult(matches, category).toString(), null, HttpStatus.OK);
         }
+        return response;
 
-        JsonObject response = new JsonObject();
-        response.addProperty(AHLConstants.ERROR, "category should ne men or women or all");
-        return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<String> validateCategory(String category) {
+        if(!(category.equals(AHLConstants.MEN) || category.equals(AHLConstants.WOMEN) || category.equals(AHLConstants.ALL))) {
+            JsonObject response = new JsonObject();
+            response.addProperty(AHLConstants.ERROR, "category should ne men or women or all");
+            return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
+        }
+        return null;
     }
 
     @PostMapping(path = "/match")
@@ -137,8 +145,8 @@ public class MatchController {
         }
     }
 
-    @PostMapping(path = "/match/{match}")
-    public ResponseEntity<String> triggerMatch(@PathVariable Match match, @RequestParam String action) {
+    @PostMapping(path = "/trigger-match")
+    public ResponseEntity<String> triggerMatch(@RequestBody Match match, @RequestParam String action) {
 
         JsonObject response = new JsonObject();
         response.addProperty(AHLConstants.ERROR, "Invalid action should be start or end");
@@ -152,9 +160,14 @@ public class MatchController {
     }
 
     @GetMapping(path = "/points")
-    public List<Points> getPoints(@RequestParam Tournament tournament, @RequestParam String category) {
+    public ResponseEntity<String> getPoints(@RequestParam Tournament tournament, @RequestParam String category) {
 
+        ResponseEntity response = validateCategory(category);
+        if(response!=null){
+            return response;
+        }
         Iterable<Match> matches = this.matchRepository.findCompletedMatch(tournament.getId(), MatchStatus.COMPLETED);
+        getMatchesByCategory(matches, category);
         Map<ObjectId, Points> pointsTable = new HashMap<>();
 
         for(Match match : matches){
@@ -185,7 +198,7 @@ public class MatchController {
             } else if (result == 2) {
                 team1Point.increaseLost();
                 team2Point.increaseWon();
-            } else {
+            } else if(result==-1){
                 team1Point.increaseDraw();
                 team2Point.increaseDraw();
             }
@@ -208,7 +221,7 @@ public class MatchController {
             position++;
         }
 
-        return pointsList;
+        return new ResponseEntity<String>(pointsList.toString(), null, HttpStatus.OK);
 
     }
     @RequestMapping("/goalscored/{teamId}")
@@ -226,19 +239,15 @@ public class MatchController {
         JsonObject response = new JsonObject();
         HttpStatus status = HttpStatus.OK;
 
-        if (match.getStatus() == MatchStatus.UPCOMING) {
-            match.setStatus(MatchStatus.LIVE_MATCH);
-            if (matchRepository.save(match) != null) {
-                response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_STARTED);
+        match.setStatus(MatchStatus.LIVE_MATCH);
+        if (matchRepository.save(match) != null) {
+            response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_STARTED);
 
-            } else {
-                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
-                status = HttpStatus.INTERNAL_SERVER_ERROR;
-            }
         } else {
-            response.addProperty(AHLConstants.ERROR, "Match has already completed");
-            status = HttpStatus.BAD_REQUEST;
+            response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
+
         return new ResponseEntity<String>(response.toString(), null, status);
     }
 
@@ -246,12 +255,15 @@ public class MatchController {
         JsonObject response = new JsonObject();
         if(match != null
                 && match.getMom()!= null
-                && match.getBuddingPlayer() != null){
+                && match.getBuddingPlayer() != null
+                && match.getStatus() == MatchStatus.LIVE_MATCH){
 
             ResponseEntity<String> responseEntity = validateMatchData(match);
             if(responseEntity!=null){
                 return responseEntity;
             }
+
+
 
             match.setStatus(MatchStatus.COMPLETED);
 
@@ -288,8 +300,8 @@ public class MatchController {
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
 
-        if(!(result==0 || result==1 || result==-1)){
-            response.addProperty(AHLConstants.ERROR_MSG, "Invalid result should be 1, -1 or 0");
+        if(!(result==-1 || result==1 || result==2)){
+            response.addProperty(AHLConstants.ERROR_MSG, "Invalid result should be -1, 1 or 2");
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
         }
 
@@ -335,13 +347,15 @@ public class MatchController {
                 matchJson.addProperty("team1Name", team1.getName());
                 matchJson.addProperty("team2Name", team2.getName());
                 if (match.getStatus().equals(MatchStatus.COMPLETED)) {
+                    Player mom = this.playerRepository.findFirstById(match.getMom());
+                    Player buddingPlayer = this.playerRepository.findFirstById(match.getBuddingPlayer());
                     matchJson.addProperty("team1Goal", getGoalsByTeamInMatch(match.getId(), match.getTeam1()));
                     matchJson.addProperty("team2Goal", getGoalsByTeamInMatch(match.getId(), match.getTeam2()));
-                    matchJson.addProperty("mom", this.playerRepository.findFirstById(match.getMom()).getName());
-                    matchJson.addProperty("buddingPlayer", this.playerRepository.findFirstById(match.getBuddingPlayer()).getName());
+                    matchJson.addProperty("momName", mom.getName());
+                    matchJson.addProperty("buddingPlayerName", buddingPlayer.getName());
+
                 }
                 resultArray.add(matchJson);
-
             }
         }
         return resultArray;
