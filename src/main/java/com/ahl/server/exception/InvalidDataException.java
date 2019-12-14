@@ -4,11 +4,14 @@ import org.apache.commons.text.StringSubstitutor;
 
 import java.util.Map;
 
-public class InSufficientDataException extends Exception{
+public class InvalidDataException extends Exception{
 
   private String message;
 
-  public InSufficientDataException(String message, Map<String, String> substituteMap) {
+  public InvalidDataException(String message){
+    this.message=message;
+  }
+  public InvalidDataException(String message, Map<String, String> substituteMap ) {
 
     if (!substituteMap.isEmpty()) {
       StringSubstitutor substitutor = new StringSubstitutor(substituteMap);
@@ -20,4 +23,5 @@ public class InSufficientDataException extends Exception{
   public String getMessage() {
     return this.message;
   }
+
 }
