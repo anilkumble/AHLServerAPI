@@ -6,10 +6,11 @@ import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Goal;
 import com.ahl.server.entity.Match;
 import com.ahl.server.entity.Player;
-import com.ahl.server.entity.Team;
 import com.ahl.server.exception.InvalidDataException;
 import com.ahl.server.repository.*;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mongodb.DBCollection;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/api")
@@ -49,15 +51,51 @@ public class GoalController {
         return count;
     }
 
-//    @RequestMapping("/testgoal/{teamId}")
-//    public int test(@PathVariable ObjectId teamId)
-//    {
-//        JsonObject response = new JsonObject();
-//        int count=0;
-//        MatchController m =new MatchController();
-//        m.getGoalsScoredByTeamId(teamId);
-//        return count;
-//    }
+    @RequestMapping("/topscorers/{tournamentId}")
+    public Iterable<Goal> getTopscores(@PathVariable ObjectId tournamentId)
+    {
+        JsonObject response = new JsonObject();
+        Iterable<Goal> goals=this.goalRepository.findAll();
+        ArrayList<ObjectId> playerList = new ArrayList<ObjectId>();
+        for(Goal goal :goals)
+        {
+            playerList.add(goal.getPlayerId());
+        }
+
+        Set<ObjectId> playerSet = new HashSet<ObjectId>(playerList);
+        Map<ObjectId, Integer> playerGoals=new HashMap();
+        for (ObjectId s : playerSet){
+            playerGoals.put(s,Collections.frequency(playerList, s));
+        }
+
+        Set<Map.Entry<ObjectId, Integer>> set = playerGoals.entrySet();
+        List<Map.Entry<ObjectId, Integer>> SortedMap = new ArrayList<Map.Entry<ObjectId, Integer>>(
+                set);
+        Collections.sort(SortedMap, new Comparator<Map.Entry<ObjectId, Integer>>() {
+            public int compare(Map.Entry<ObjectId, Integer> o1,
+                               Map.Entry<ObjectId, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+        for (Map.Entry<ObjectId, Integer> entry : SortedMap) {
+            System.out.println(entry.getValue());
+        }
+        int count=5,result=0,previous_value=0;
+        Map<ObjectId, Integer> topPlayerGoals=new HashMap();
+
+        for(Map.Entry<ObjectId, Integer> entry : SortedMap)
+        {
+            if (result==count)
+                break;
+            topPlayerGoals.put(entry.getKey(),entry.getValue());
+            if(entry.getValue()!=previous_value){
+                previous_value=entry.getValue();
+                result++;
+            }
+
+        }
+        return goals;
+    }
 
     @PostMapping(path = "/goal")
     public ResponseEntity<String> addGoal(@Valid @RequestBody Goal goal)
