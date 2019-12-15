@@ -222,7 +222,7 @@ public class MatchController {
                     Points points = new Points();
                     points.setTeamId(teamId);
                     points.setTeamName(teamTagMap.get(teamId).getName());
-                    pointsTable.put(teamId, new Points());
+                    pointsTable.put(teamId, points);
                 }
             }
         }
