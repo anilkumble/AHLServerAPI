@@ -60,7 +60,7 @@ public class MatchController {
     private ResponseEntity<String> validateCategory(String category) {
         if(!(category.equals(AHLConstants.MEN) || category.equals(AHLConstants.WOMEN) || category.equals(AHLConstants.ALL))) {
             JsonObject response = new JsonObject();
-            response.addProperty(AHLConstants.ERROR, "category should ne men or women or all");
+            response.addProperty(AHLConstants.ERROR, "category should be men or women or all");
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
         }
         return null;
@@ -219,6 +219,9 @@ public class MatchController {
         if(pointsTable.size() != teamTagMap.size()){
             for(ObjectId teamId : teamTagMap.keySet()){
                 if(pointsTable.get(teamId)==null){
+                    Points points = new Points();
+                    points.setTeamId(teamId);
+                    points.setTeamName(teamTagMap.get(teamId).getName());
                     pointsTable.put(teamId, new Points());
                 }
             }
