@@ -80,9 +80,9 @@ public class GoalController {
         }
 
         Set<Map.Entry<ObjectId, Integer>> set = playerGoals.entrySet();
-        List<Map.Entry<ObjectId, Integer>> SortedMap = new ArrayList<Map.Entry<ObjectId, Integer>>(
+        List<Map.Entry<ObjectId, Integer>> sortedMap = new ArrayList<Map.Entry<ObjectId, Integer>>(
                 set);
-        Collections.sort(SortedMap, new Comparator<Map.Entry<ObjectId, Integer>>() {
+        Collections.sort(sortedMap, new Comparator<Map.Entry<ObjectId, Integer>>() {
             public int compare(Map.Entry<ObjectId, Integer> o1,
                                Map.Entry<ObjectId, Integer> o2) {
                 return o2.getValue().compareTo(o1.getValue());
@@ -90,7 +90,7 @@ public class GoalController {
         });
         int result=0,previous_value=0;
         JsonArray resultArray = new JsonArray();
-        for(Map.Entry<ObjectId, Integer> entry : SortedMap)
+        for(Map.Entry<ObjectId, Integer> entry : sortedMap)
         {
             if (result>=count && entry.getValue()!=previous_value)
                 break;
