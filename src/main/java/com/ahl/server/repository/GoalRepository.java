@@ -21,8 +21,10 @@ public interface GoalRepository extends CrudRepository<Goal, ObjectId> {
 
     @Query(value = "{'againstTeamId' : ?0}")
     public List<Goal> findGoalsAgainstByTeamId(ObjectId TeamId);
+
     @Query(value= "{ 'matchId': ?0 , 'forTeamId':?1 }")
     public List<Goal> findGoalsByTeamInMatch(ObjectId matchId,ObjectId teamId);
+
 }
 
 
