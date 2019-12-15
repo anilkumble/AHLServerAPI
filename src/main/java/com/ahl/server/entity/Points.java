@@ -2,6 +2,8 @@ package com.ahl.server.entity;
 
 import org.bson.types.ObjectId;
 
+import java.util.StringJoiner;
+
 public class Points {
 
     private ObjectId teamId;
@@ -133,5 +135,23 @@ public class Points {
 
     public void increaseLost(){
         this.lost++;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Points.class.getSimpleName() + "[", "]")
+                .add("teamId=" + teamId)
+                .add("teamName='" + teamName + "'")
+                .add("teamLogo='" + teamLogo + "'")
+                .add("position=" + position)
+                .add("points=" + points)
+                .add("goalScored=" + goalScored)
+                .add("goalAgainst=" + goalAgainst)
+                .add("goalDifference=" + goalDifference)
+                .add("matchesPlayed=" + matchesPlayed)
+                .add("won=" + won)
+                .add("draw=" + draw)
+                .add("lost=" + lost)
+                .toString();
     }
 }
