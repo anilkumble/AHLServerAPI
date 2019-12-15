@@ -5,12 +5,12 @@ import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Goal;
 import com.ahl.server.entity.Match;
-import com.ahl.server.entity.Player;
+import com.ahl.server.entity.Team;
 import com.ahl.server.exception.InvalidDataException;
 import com.ahl.server.repository.*;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mongodb.DBCollection;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/api")
@@ -50,16 +49,28 @@ public class GoalController {
         }
         return count;
     }
-
+    private ResponseEntity<String> validateCategory(String category) {
+        if(!(category.equals(AHLConstants.MEN) || category.equals(AHLConstants.WOMEN) || category.equals(AHLConstants.ALL))) {
+            JsonObject response = new JsonObject();
+            response.addProperty(AHLConstants.ERROR, "category should ne men or women or all");
+            return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
+        }
+        return null;
+    }
     @RequestMapping("/topscorers/{tournamentId}")
-    public Iterable<Goal> getTopscores(@PathVariable ObjectId tournamentId)
+    public ResponseEntity<String> getTopscores(@PathVariable ObjectId tournamentId, @RequestParam String category,@RequestParam int count)
     {
-        JsonObject response = new JsonObject();
+        ResponseEntity response = validateCategory(category);
+        if(response!=null){
+            return response;
+        }
         Iterable<Goal> goals=this.goalRepository.findAll();
         ArrayList<ObjectId> playerList = new ArrayList<ObjectId>();
         for(Goal goal :goals)
         {
-            playerList.add(goal.getPlayerId());
+            Team playerTeam=this.teamRepository.findFirstById(goal.getForTeamId());
+            if (category.equalsIgnoreCase(playerTeam.getTeamTag().getCategory()))
+                playerList.add(goal.getPlayerId());
         }
 
         Set<ObjectId> playerSet = new HashSet<ObjectId>(playerList);
@@ -77,24 +88,23 @@ public class GoalController {
                 return o2.getValue().compareTo(o1.getValue());
             }
         });
-        for (Map.Entry<ObjectId, Integer> entry : SortedMap) {
-            System.out.println(entry.getValue());
-        }
-        int count=5,result=0,previous_value=0;
-        Map<ObjectId, Integer> topPlayerGoals=new HashMap();
-
+        int result=0,previous_value=0;
+        JsonArray resultArray = new JsonArray();
         for(Map.Entry<ObjectId, Integer> entry : SortedMap)
         {
-            if (result==count)
+            if (result>=count && entry.getValue()!=previous_value)
                 break;
-            topPlayerGoals.put(entry.getKey(),entry.getValue());
+            JsonObject goalObject=new JsonObject();
+            String playerId =new Gson().toJson(entry.getKey());
+            goalObject.addProperty("playerId",playerId);
+            goalObject.addProperty("goals",entry.getValue());
             if(entry.getValue()!=previous_value){
                 previous_value=entry.getValue();
                 result++;
             }
-
+            resultArray.add(goalObject);
         }
-        return goals;
+        return new ResponseEntity<String>(resultArray.toString(), null, HttpStatus.OK);
     }
 
     @PostMapping(path = "/goal")
