@@ -5,6 +5,7 @@ import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Goal;
 import com.ahl.server.entity.Match;
+import com.ahl.server.entity.Player;
 import com.ahl.server.entity.Team;
 import com.ahl.server.exception.InvalidDataException;
 import com.ahl.server.repository.*;
@@ -35,6 +36,7 @@ public class GoalController {
     private MatchRepository matchRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
+
     @RequestMapping("/goals/{tournamentId}/{id}")
     public int getGoalsByPlayerId(@PathVariable ObjectId tournamentId,@PathVariable ObjectId id)
     {
@@ -95,8 +97,10 @@ public class GoalController {
             if (result>=count && entry.getValue()!=previous_value)
                 break;
             JsonObject goalObject=new JsonObject();
-            String playerId =new Gson().toJson(entry.getKey());
-            goalObject.addProperty("playerId",playerId);
+            Gson gson = new Gson();
+            Player player = this.playerRepository.findFirstById(entry.getKey());
+            JsonObject playerJson = gson.fromJson(gson.toJson(player), JsonObject.class);
+            goalObject.add("player", playerJson);
             goalObject.addProperty("goals",entry.getValue());
             if(entry.getValue()!=previous_value){
                 previous_value=entry.getValue();
