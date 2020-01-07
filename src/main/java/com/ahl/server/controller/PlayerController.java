@@ -4,6 +4,14 @@ package com.ahl.server.controller;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.*;
 import com.ahl.server.repository.*;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.ByteArray;
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Bucket;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.StorageClient;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
@@ -26,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -144,5 +154,33 @@ public class PlayerController {
       response.addProperty(AHLConstants.ERROR, AHLConstants.PLAYER_NOT_FOUND);
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
     }
+  }
+  @PutMapping(path="/player/upload/{byteArray}")
+  public ResponseEntity<String> uploadPlayerImage(@RequestBody byte[] byteArray) throws IOException {
+
+    try{
+      FileInputStream firebaseToken = new FileInputStream("src/main/firebase.json");
+      FirebaseOptions options = new FirebaseOptions.Builder()
+              .setCredentials(GoogleCredentials.fromStream(firebaseToken))
+              .setStorageBucket("dileepkosur3524.appspot.com")
+              .build();
+      FirebaseApp fireApp = FirebaseApp.initializeApp(options);
+      StorageClient storageClient = StorageClient.getInstance(fireApp);
+      ByteArrayInputStream test=new ByteArrayInputStream(byteArray);
+
+      String blobString = "Player/" + "barca.JPEG";
+      Blob blob = storageClient.bucket("dileepkosur3524.appspot.com")
+              .create(blobString, test, Bucket.BlobWriteOption.userProject("dileepkosur3524"));
+      blob.getStorage().createAcl(blob.getBlobId(), Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+      System.out.println(blob.getMediaLink());
+      return new ResponseEntity<String>(blob.getMediaLink(),null, HttpStatus.OK);
+    }
+    catch(Exception e)
+    {
+      System.out.println(e);
+    }
+
+
+    return null;
   }
 }
