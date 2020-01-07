@@ -14,6 +14,7 @@ public class Card {
     private ObjectId playerId;
     private CardType cardType;
     private ObjectId forTeamId;
+    private int time;
 
     public ObjectId getForTeamId() {
         return forTeamId;
@@ -23,7 +24,6 @@ public class Card {
         this.forTeamId = forTeamId;
     }
 
-    private int time;
 
     public int getTime() {
         return time;

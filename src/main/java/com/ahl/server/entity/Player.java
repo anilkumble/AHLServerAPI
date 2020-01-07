@@ -28,6 +28,15 @@ public class Player {
     private int graduatedYear;
     private String phoneNo;
     private int profile;
+    private String imgUrl;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     public Player(String name, String emailId) {
         this.name = name;
