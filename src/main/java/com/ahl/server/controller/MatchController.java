@@ -39,9 +39,6 @@ public class MatchController {
     @Autowired
     private PlayerRepository playerRepository;
 
-
-    private Map<ObjectId, Team> teamTagMap;
-
     @RequestMapping("/matches")
     public ResponseEntity<String> getAllMatches(@RequestParam Tournament tournament, @RequestParam String category) {
 
@@ -53,7 +50,8 @@ public class MatchController {
         }
         if(response==null){
             Iterable<Match> matches = this.matchRepository.findAllMatchByTournament(tournament.getId());
-            return new ResponseEntity<String>(getMatchResult(matches, tournament.getId(), category).toString(), null, HttpStatus.OK);
+            Map<ObjectId, Team> teamTagMap = getTeamTagMap(tournament.getId(), category);
+            return new ResponseEntity<String>(getMatchResult(matches, teamTagMap).toString(), null, HttpStatus.OK);
         }
         return response;
 
@@ -62,7 +60,7 @@ public class MatchController {
     private ResponseEntity<String> validateCategory(String category) {
         if(!(category.equals(AHLConstants.MEN) || category.equals(AHLConstants.WOMEN) || category.equals(AHLConstants.ALL))) {
             JsonObject response = new JsonObject();
-            response.addProperty(AHLConstants.ERROR, "category should ne men or women or all");
+            response.addProperty(AHLConstants.ERROR, "category should be men or women or all");
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.BAD_REQUEST);
         }
         return null;
@@ -166,13 +164,14 @@ public class MatchController {
 
     @GetMapping(path = "/points")
     public ResponseEntity<String> getPoints(@RequestParam Tournament tournament, @RequestParam String category) {
-
         ResponseEntity response = validateCategory(category);
         if(response!=null){
             return response;
         }
+
+        Map<ObjectId, Team> teamTagMap = getTeamTagMap(tournament.getId(), category);
         Iterable<Match> matches = this.matchRepository.findCompletedMatch(tournament.getId(), MatchStatus.COMPLETED);
-        matches = getMatchesByCategory(matches, tournament.getId(), category);
+        matches = getMatchesByCategory(matches, teamTagMap);
         Map<ObjectId, Points> pointsTable = new HashMap<>();
 
         for(Match match : matches){
@@ -220,7 +219,10 @@ public class MatchController {
         if(pointsTable.size() != teamTagMap.size()){
             for(ObjectId teamId : teamTagMap.keySet()){
                 if(pointsTable.get(teamId)==null){
-                    pointsTable.put(teamId, new Points());
+                    Points points = new Points();
+                    points.setTeamId(teamId);
+                    points.setTeamName(teamTagMap.get(teamId).getName());
+                    pointsTable.put(teamId, points);
                 }
             }
         }
@@ -326,10 +328,10 @@ public class MatchController {
         return goals.size();
     }
 
-    private JsonArray getMatchResult(Iterable<Match> matches, ObjectId tournamentId, String category){
+    private JsonArray getMatchResult(Iterable<Match> matches, Map<ObjectId, Team> teamTagMap){
         JsonArray resultArray = new JsonArray();
         Gson gson = new Gson();
-        List<Match> matchList = getMatchesByCategory(matches, tournamentId, category);
+        List<Match> matchList = getMatchesByCategory(matches, teamTagMap);
         if(teamTagMap!=null) {
             for(Match match : matchList) {
                 Team team1 = teamTagMap.get(match.getTeam1());
@@ -352,9 +354,8 @@ public class MatchController {
         return resultArray;
     }
 
-    private List<Match> getMatchesByCategory(Iterable<Match> matches, ObjectId tournamentId, String category) {
+    private List<Match> getMatchesByCategory(Iterable<Match> matches,Map teamTagMap) {
         List<Match> resultList = new ArrayList<>();
-        setTeamTagMap(tournamentId, category);
         if (teamTagMap != null) {
             for (Match match : matches) {
                 if (teamTagMap.get(match.getTeam1())!=null) {
@@ -365,9 +366,9 @@ public class MatchController {
         return resultList;
     }
 
-    private void setTeamTagMap(ObjectId tournamentId, String category) {
+    private Map<ObjectId, Team> getTeamTagMap(ObjectId tournamentId, String category) {
         Iterable<Team> teams = this.teamRepository.findTeamsByTournament(tournamentId);
-        teamTagMap = new HashMap<>();
+        Map<ObjectId, Team> teamTagMap = new HashMap<>();
         teams.forEach(team -> {
             if(category.equals(AHLConstants.MEN) && team.getTeamTag().getCategory().equals(AHLConstants.MEN)) {
                 teamTagMap.put(team.getId(), team);
@@ -377,6 +378,7 @@ public class MatchController {
                 teamTagMap.put(team.getId(), team);
             }
         });
+        return teamTagMap;
     }
 
 
