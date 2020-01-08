@@ -156,7 +156,7 @@ public class PlayerController {
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
     }
   }
-  @PutMapping(path="/player/upload")
+  @PostMapping(path="/player/upload")
   public ResponseEntity<String> uploadPlayerImage(@RequestBody byte[] name) throws IOException {
 
     try{
