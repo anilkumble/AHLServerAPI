@@ -4,6 +4,7 @@ package com.ahl.server.controller;
 import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.*;
 import com.ahl.server.repository.*;
+import org.apache.commons.codec.binary.Base64;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.ByteArray;
 import com.google.cloud.storage.Acl;
@@ -155,10 +156,13 @@ public class PlayerController {
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
     }
   }
-  @PutMapping(path="/player/upload/{byteArray}")
-  public ResponseEntity<String> uploadPlayerImage(@RequestBody byte[] byteArray) throws IOException {
+  @PutMapping(path="/player/upload")
+  public ResponseEntity<String> uploadPlayerImage(@RequestBody byte[] name) throws IOException {
 
     try{
+//      byte[] name = Base64.encodeBase64(byteArray.getBytes());
+//      byte[] decodedString = Base64.decodeBase64(new String(name).getBytes("UTF-8"));
+//      byte[] byteArr = Base64.decodeBase64(byteArray.getBytes());
       FileInputStream firebaseToken = new FileInputStream("src/main/firebase.json");
       FirebaseOptions options = new FirebaseOptions.Builder()
               .setCredentials(GoogleCredentials.fromStream(firebaseToken))
@@ -166,9 +170,9 @@ public class PlayerController {
               .build();
       FirebaseApp fireApp = FirebaseApp.initializeApp(options);
       StorageClient storageClient = StorageClient.getInstance(fireApp);
-      ByteArrayInputStream test=new ByteArrayInputStream(byteArray);
+      ByteArrayInputStream test=new ByteArrayInputStream(name);
 
-      String blobString = "Player/" + "barca.JPEG";
+      String blobString = "Player/" + "test.JPG";
       Blob blob = storageClient.bucket("dileepkosur3524.appspot.com")
               .create(blobString, test, Bucket.BlobWriteOption.userProject("dileepkosur3524"));
       blob.getStorage().createAcl(blob.getBlobId(), Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
