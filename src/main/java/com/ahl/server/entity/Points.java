@@ -1,14 +1,10 @@
 package com.ahl.server.entity;
 
-import org.bson.types.ObjectId;
-
 import java.util.StringJoiner;
 
 public class Points {
 
-    private ObjectId teamId;
-    private String teamName;
-    private String teamLogo;
+    private Team team;
     private int position;
     private int points;
     private int goalScored;
@@ -20,23 +16,14 @@ public class Points {
     private int lost;
 
     public Points() {
-
     }
 
-    public ObjectId getTeamId() {
-        return teamId;
+    public Team getTeam() {
+        return team;
     }
 
-    public void setTeamId(ObjectId teamId) {
-        this.teamId = teamId;
-    }
-
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public int getPosition() {
@@ -45,14 +32,6 @@ public class Points {
 
     public void setPosition(int position) {
         this.position = position;
-    }
-
-    public String getTeamLogo() {
-        return teamLogo;
-    }
-
-    public void setTeamLogo(String teamLogo) {
-        this.teamLogo = teamLogo;
     }
 
     public int getGoalDifference() {
@@ -140,9 +119,7 @@ public class Points {
     @Override
     public String toString() {
         return new StringJoiner(", ", Points.class.getSimpleName() + "[", "]")
-                .add("teamId=" + teamId)
-                .add("teamName='" + teamName + "'")
-                .add("teamLogo='" + teamLogo + "'")
+                .add("team=" + team)
                 .add("position=" + position)
                 .add("points=" + points)
                 .add("goalScored=" + goalScored)

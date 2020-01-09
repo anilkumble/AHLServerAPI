@@ -181,14 +181,12 @@ public class MatchController {
             Points team2Point = pointsTable.get(team2.getId());
             if(team1Point==null){
                 team1Point = new Points();
-                team1Point.setTeamId(team1.getId());
-                team1Point.setTeamName(team1.getName());
+                team1Point.setTeam(team1);
                 pointsTable.put(team1.getId(),team1Point);
             }
             if(team2Point==null){
                 team2Point = new Points();
-                team2Point.setTeamId(team2.getId());
-                team2Point.setTeamName(team2.getName());
+                team2Point.setTeam(team2);
                 pointsTable.put(team2.getId(),team2Point);
             }
 
@@ -220,8 +218,7 @@ public class MatchController {
             for(ObjectId teamId : teamTagMap.keySet()){
                 if(pointsTable.get(teamId)==null){
                     Points points = new Points();
-                    points.setTeamId(teamId);
-                    points.setTeamName(teamTagMap.get(teamId).getName());
+                    points.setTeam(teamTagMap.get(teamId));
                     pointsTable.put(teamId, points);
                 }
             }
