@@ -2,6 +2,7 @@ package com.ahl.server.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -16,21 +17,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         http
                 .httpBasic()
                 .and()
-                .authorizeRequests().anyRequest().authenticated()
-                .antMatchers("/api/tournament").hasRole("ADMIN")
-//                .antMatchers("/api/tournament/*").hasRole("ADMIN")
-//                .antMatchers("/api/team").hasRole("ADMIN")
-//                .antMatchers("/api/team/*").hasRole("ADMIN")
-//                .antMatchers("/api/player-relation").hasRole("ADMIN")
-//                .antMatchers("/api/player-relation/*").hasRole("ADMIN")
-//                .antMatchers("/api/match").hasRole("ADMIN")
-//                .antMatchers("/api/match/*").hasRole("ADMIN")
-//                .antMatchers("/api/start-match/*").hasRole("ADMIN")
-//                .antMatchers("/api/end-match/*").hasRole("ADMIN")
-//                .antMatchers("/api/goal").hasRole("ADMIN")
-//                .antMatchers("/api/goal/*").hasRole("ADMIN")
-//                .antMatchers("/api/player").hasRole("ADMIN")
-//                .antMatchers("/api/player/*").hasRole("ADMIN")
+                .authorizeRequests()
+                .anyRequest().authenticated()
                 .and()
                 .csrf()
                 .disable();
@@ -48,6 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().anyRequest();//antMatchers("/api/tournaments","/api/teams","/api/matches", "/api/goals", "api/players");
+        web.ignoring().antMatchers(HttpMethod.GET);
     }
 }
