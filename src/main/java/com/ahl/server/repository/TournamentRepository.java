@@ -10,8 +10,8 @@ public interface TournamentRepository extends CrudRepository<Tournament, ObjectI
 
   public Tournament findFirstById(ObjectId id);
 
-  @Query(value = "{'isLive' : ?0}")
-  public Tournament findLiveTournament(boolean isLive);
+  @Query(value = "{'season' : ?0, 'tournamentType':?1 }")
+  public Iterable<Tournament> findLiveTournament(String season, String type);
 
 }
 

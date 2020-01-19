@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController()
 @RequestMapping("/api")
@@ -23,14 +22,9 @@ public class TournamentController {
     this.tournamentRepository = tournamentRepository;
   }
 
-  @GetMapping("/tournaments")
-  public Iterable<Tournament> getAllTournaments(){
-    return tournamentRepository.findAll();
-  }
-
   @GetMapping("/tournament")
-  public Tournament getLiveTournament(@RequestParam boolean status){
-    return tournamentRepository.findLiveTournament(status);
+  public Tournament getTournament(@RequestParam String season, @RequestParam String type){
+    return tournamentRepository.findLiveTournament(season, type).iterator().next();
   }
 
   @PostMapping(path = "/tournament")

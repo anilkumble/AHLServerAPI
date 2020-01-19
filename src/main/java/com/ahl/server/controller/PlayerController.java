@@ -1,11 +1,8 @@
 package com.ahl.server.controller;
 
-
-import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.*;
 import com.ahl.server.repository.*;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.ByteArray;
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
@@ -15,11 +12,7 @@ import com.google.firebase.cloud.StorageClient;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
-import com.ahl.server.exception.InvalidDataException;
 
-import com.mongodb.DBObject;
-import org.apache.commons.lang3.ObjectUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,15 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api")
@@ -120,12 +109,8 @@ public class PlayerController {
     JsonObject response = new JsonObject();
     if(oldPlayer != null) {
       oldPlayer.setName(player.getName());
-      oldPlayer.setEmailId(player.getEmailId());
-      oldPlayer.setAge(player.getAge());
-      oldPlayer.setGraduatedYear(player.getGraduatedYear());
-      oldPlayer.setDepartment(player.getDepartment());
-      oldPlayer.setPhoneNo(player.getPhoneNo());
       oldPlayer.setPosition(player.getPosition());
+      oldPlayer.setProfile(player.getProfile());
 
       try {
         Player.validatePlayer(oldPlayer);
@@ -155,7 +140,7 @@ public class PlayerController {
       return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
     }
   }
-  @PutMapping(path="/player/upload/{byteArray}")
+  @PutMapping(path="/player/upload")
   public ResponseEntity<String> uploadPlayerImage(@RequestBody byte[] byteArray) throws IOException {
 
     try{

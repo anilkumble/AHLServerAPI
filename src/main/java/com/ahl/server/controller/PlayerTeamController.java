@@ -2,7 +2,6 @@ package com.ahl.server.controller;
 
 import com.ahl.server.AHLConstants;
 import com.ahl.server.AHLUtils;
-import com.ahl.server.entity.Player;
 import com.ahl.server.entity.PlayerTeamRelation;
 import com.ahl.server.entity.Team;
 import com.ahl.server.entity.Tournament;

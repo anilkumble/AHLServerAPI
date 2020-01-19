@@ -1,14 +1,9 @@
 package com.ahl.server.entity;
 
-import com.ahl.server.AHLConstants;
-import com.ahl.server.exception.InSufficientDataException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Document(collection = "goals")
 public class Goal {

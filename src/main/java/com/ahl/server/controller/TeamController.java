@@ -1,7 +1,6 @@
 package com.ahl.server.controller;
 
 import com.ahl.server.AHLUtils;
-import com.ahl.server.entity.Points;
 import com.ahl.server.repository.PointsRepository;
 import com.ahl.server.repository.TournamentRepository;
 import com.google.gson.JsonObject;
@@ -9,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.ahl.server.AHLConstants;
 import com.ahl.server.entity.Team;
 import com.ahl.server.repository.TeamRepository;
-import com.google.gson.JsonObject;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,8 +27,8 @@ public class TeamController {
     private PointsRepository pointsRepository;
 
     @GetMapping("/teams")
-    public Iterable<Team> getAllTeams() {
-        return teamRepository.findAll();
+    public Iterable<Team> getTeamsByTournament(@RequestParam ObjectId tournamentId) {
+        return teamRepository.findTeamsByTournament(tournamentId);
     }
 
     @PostMapping(path = "/team", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -45,7 +43,7 @@ public class TeamController {
         }
         if(this.teamRepository.save(team)!=null)
         {
-            response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
+            response.addProperty(AHLConstants.SUCCESS, AHLConstants.TEAM_CREATED);
             return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
         } else{
             response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);

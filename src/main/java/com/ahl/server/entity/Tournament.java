@@ -1,5 +1,6 @@
 package com.ahl.server.entity;
 
+import com.ahl.server.enums.TournamentConfig;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,6 +25,8 @@ public class Tournament {
 
     @NotEmpty
     private String tournamentName;
+
+    private TournamentConfig tournamentType;
 
     private String tournamentLogo;
 
@@ -83,6 +86,14 @@ public class Tournament {
 
     public void setLive(boolean live) {
         isLive = live;
+    }
+
+    public TournamentConfig getTournamentType() {
+        return tournamentType;
+    }
+
+    public void setTournamentType(TournamentConfig tournamentType) {
+        this.tournamentType = tournamentType;
     }
 
     @Override
