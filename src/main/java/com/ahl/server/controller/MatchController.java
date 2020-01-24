@@ -148,16 +148,48 @@ public class MatchController {
         }
     }
 
-    @PostMapping(path = "/trigger-match")
-    public ResponseEntity<String> triggerMatch(@RequestBody Match match, @RequestParam String action) {
-
+    @PutMapping(path = "match/start/{match}")
+    public ResponseEntity<String> startMatch(@PathVariable Match match) {
         JsonObject response = new JsonObject();
-        response.addProperty(AHLConstants.ERROR, "Invalid action should be start or end");
-        if (action.equals(AHLConstants.START)) {
-            return startMatch(match);
-        }else if (action.equals(AHLConstants.END)){
-            return endMatch(match);
-        }else{
+        HttpStatus status = HttpStatus.OK;
+
+        match.setStatus(MatchStatus.LIVE_MATCH);
+        if (matchRepository.save(match) != null) {
+            response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_STARTED);
+
+        } else {
+            response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<String>(response.toString(), null, status);
+    }
+
+    @PutMapping(path = "match/end/{dbMatch}")
+    public ResponseEntity<String> endMatch(@PathVariable Match dbMatch, @RequestBody Match match) {
+        JsonObject response = new JsonObject();
+        if(match.getMom() != null && match.getBuddingPlayer() != null && dbMatch.getStatus() == MatchStatus.LIVE_MATCH){
+
+            ResponseEntity<String> responseEntity = validateMatchData(match);
+            if(responseEntity!=null){
+                return responseEntity;
+            }
+
+            dbMatch.setStatus(MatchStatus.COMPLETED);
+            dbMatch.setMom(match.getMom());
+            dbMatch.setResult(match.getResult());
+            dbMatch.setBuddingPlayer(match.getBuddingPlayer());
+
+            if (matchRepository.save(match) != null) {
+                response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_ENDED);
+                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+            } else {
+                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
+                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        else{
+            response.addProperty(AHLConstants.ERROR, "Match object should have man of the match and budding player and status should be on going");
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
     }
@@ -244,53 +276,6 @@ public class MatchController {
     private int getGoalsAgainstByTeamId(@PathVariable ObjectId teamId) {
         List<Goal> goals = goalRepository.findGoalsAgainstByTeamId(teamId);
         return goals.size();
-    }
-
-    private ResponseEntity<String> startMatch(Match match) {
-        JsonObject response = new JsonObject();
-        HttpStatus status = HttpStatus.OK;
-
-        match.setStatus(MatchStatus.LIVE_MATCH);
-        if (matchRepository.save(match) != null) {
-            response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_STARTED);
-
-        } else {
-            response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-
-        return new ResponseEntity<String>(response.toString(), null, status);
-    }
-
-    private ResponseEntity<String> endMatch(Match match) {
-        JsonObject response = new JsonObject();
-        Match dbMatch = this.matchRepository.findFirstById(match.getId());
-        if(match.getMom() != null && match.getBuddingPlayer() != null && dbMatch.getStatus() == MatchStatus.LIVE_MATCH){
-
-            ResponseEntity<String> responseEntity = validateMatchData(match);
-            if(responseEntity!=null){
-                return responseEntity;
-            }
-
-
-
-            dbMatch.setStatus(MatchStatus.COMPLETED);
-            dbMatch.setMom(match.getMom());
-            dbMatch.setResult(match.getResult());
-            dbMatch.setBuddingPlayer(match.getBuddingPlayer());
-
-            if (matchRepository.save(match) != null) {
-                response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_ENDED);
-                return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
-            } else {
-                response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);
-                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-        else{
-            response.addProperty(AHLConstants.ERROR, "Match object should have man of the match and budding player and status should be on going");
-            return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
-        }
     }
 
     private ResponseEntity<String> validateMatchData(Match match) {

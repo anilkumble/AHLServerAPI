@@ -32,6 +32,7 @@ public class CardController {
     private TeamRepository teamRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
+
     @PostMapping(path= "/card")
     private ResponseEntity<String> addCard(@RequestBody Card card)
     {
