@@ -325,17 +325,17 @@ public class MatchController {
                 Team team1 = teamTagMap.get(match.getTeam1());
                 Team team2 = teamTagMap.get(match.getTeam2());
                 JsonObject matchJson = gson.fromJson(gson.toJson(match), JsonObject.class);
-                matchJson.addProperty("team1", gson.toJson(team1));
-                matchJson.addProperty("team2", new Gson().toJson(team2));
+                matchJson.add("team1",gson.fromJson(gson.toJson(team1), JsonObject.class));
+                matchJson.add("team2", gson.fromJson(gson.toJson(team1), JsonObject.class));
                 if (match.getStatus().equals(MatchStatus.COMPLETED) || match.getStatus().equals(MatchStatus.LIVE_MATCH)) {
-                    matchJson.addProperty("team1Scorers", getGoalsByTeamInMatch(match.getId(), match.getTeam1()).toString());
-                    matchJson.addProperty("team2Scorers", getGoalsByTeamInMatch(match.getId(), match.getTeam2()).toString());
+                    matchJson.add("team1Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(match.getId(), match.getTeam1())), JsonObject.class));
+                    matchJson.add("team2Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(match.getId(), match.getTeam2())), JsonObject.class));
                     if(match.getStatus().equals(MatchStatus.COMPLETED)) {
                         Player mom = this.playerRepository.findFirstById(match.getMom());
                         Player buddingPlayer = this.playerRepository.findFirstById(match.getBuddingPlayer());
-                        matchJson.addProperty("mom", gson.toJson(mom));
+                        matchJson.add("mom", gson.fromJson(gson.toJson(mom), JsonObject.class));
                         if(buddingPlayer!=null) {
-                            matchJson.addProperty("buddingPlayer", gson.toJson(buddingPlayer));
+                            matchJson.add("buddingPlayer", gson.fromJson(gson.toJson(buddingPlayer), JsonObject.class));
                         }
                     }
                 }
