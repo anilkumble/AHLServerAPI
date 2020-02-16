@@ -9,6 +9,8 @@ import com.google.cloud.storage.Bucket;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
@@ -55,21 +57,26 @@ public class PlayerController {
   }
 
   @GetMapping("/players/{team}")
-  public ResponseEntity<Object> getAllPlayersByTournamentAndTeamId(@PathVariable Team team){
+  public ResponseEntity<String> getAllPlayersByTournamentAndTeamId(@PathVariable Team team){
+    Gson gson = new Gson();
+    JsonArray playerResults =   new JsonArray();
     JsonObject response = new JsonObject();
     if(team != null) {
       List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationByTeamId(team.getId());
-      List<PlayerResult> playerResultList = new ArrayList<>();
+      JsonObject playerResult = new JsonObject();
       for(PlayerTeamRelation relation : relations){
         Player p = playerRepository.findFirstById(relation.getPlayerId());
         int goalCount = goalRepository.findAllGoalsByplayerId(relation.getPlayerId()).size();
         List<Card> cards = this.cardRepository.findCardsByplayerId(p.getId());
-        playerResultList.add(new PlayerResult(p,goalCount,cards));
+        playerResult.add("player", gson.fromJson(gson.toJson(p), JsonObject.class));
+        playerResult.addProperty("goals",goalCount);
+        playerResult.addProperty("cards", gson.toJson(cards));
+        playerResults.add(playerResult);
       }
-      return new ResponseEntity<Object>(playerResultList, null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>(playerResults.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
     }else{
       response.addProperty(AHLConstants.ERROR, AHLConstants.TEAM_NOT_FOUND);
-      return new ResponseEntity<Object>(response, null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
