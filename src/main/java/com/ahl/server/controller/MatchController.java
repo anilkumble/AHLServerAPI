@@ -306,12 +306,18 @@ public class MatchController {
         return null;
     }
 
-    private Map getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
-        Map<String, Integer> goalMap = new HashMap<>();
+    private Map<Player, Integer> getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
+
+        Map<ObjectId, Integer> tempGoalMap = new HashMap<>();
+
+        Map<Player, Integer> goalMap = new HashMap<>();
+
         List<Goal> goals = goalRepository.findGoalsByTeamInMatch(matchId,teamId);
         for(Goal goal:goals){
-            Player player = playerRepository.findFirstById(goal.getPlayerId());
-            goalMap.merge(new Gson().toJson(player), 1, Integer::sum);
+            tempGoalMap.merge(goal.getPlayerId(), 1, Integer::sum);
+        }
+        for(ObjectId playerId : tempGoalMap.keySet()){
+            goalMap.put(this.playerRepository.findFirstById(playerId), tempGoalMap.get(playerId));
         }
         return goalMap;
     }
