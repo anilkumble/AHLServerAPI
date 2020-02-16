@@ -306,18 +306,18 @@ public class MatchController {
         return null;
     }
 
-    private Map<Player, Integer> getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
+    private Map<String, Integer> getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
 
         Map<ObjectId, Integer> tempGoalMap = new HashMap<>();
 
-        Map<Player, Integer> goalMap = new HashMap<>();
+        Map<String, Integer> goalMap = new HashMap<>();
 
         List<Goal> goals = goalRepository.findGoalsByTeamInMatch(matchId,teamId);
         for(Goal goal:goals){
             tempGoalMap.merge(goal.getPlayerId(), 1, Integer::sum);
         }
         for(ObjectId playerId : tempGoalMap.keySet()){
-            goalMap.put(this.playerRepository.findFirstById(playerId), tempGoalMap.get(playerId));
+            goalMap.put(new Gson().toJson(this.playerRepository.findFirstById(playerId)), tempGoalMap.get(playerId));
         }
         return goalMap;
     }
@@ -332,7 +332,7 @@ public class MatchController {
                 Team team2 = teamTagMap.get(match.getTeam2());
                 JsonObject matchJson = gson.fromJson(gson.toJson(match), JsonObject.class);
                 matchJson.add("team1",gson.fromJson(gson.toJson(team1), JsonObject.class));
-                matchJson.add("team2", gson.fromJson(gson.toJson(team1), JsonObject.class));
+                matchJson.add("team2", gson.fromJson(gson.toJson(team2), JsonObject.class));
                 if (match.getStatus().equals(MatchStatus.COMPLETED) || match.getStatus().equals(MatchStatus.LIVE_MATCH)) {
                     matchJson.add("team1Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(match.getId(), match.getTeam1())), JsonObject.class));
                     matchJson.add("team2Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(match.getId(), match.getTeam2())), JsonObject.class));
