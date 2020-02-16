@@ -170,17 +170,18 @@ public class MatchController {
         JsonObject response = new JsonObject();
         if(match.getMom() != null && match.getBuddingPlayer() != null && dbMatch.getStatus() == MatchStatus.LIVE_MATCH){
 
-            ResponseEntity<String> responseEntity = validateMatchData(match);
-            if(responseEntity!=null){
-                return responseEntity;
-            }
-
             dbMatch.setStatus(MatchStatus.COMPLETED);
             dbMatch.setMom(match.getMom());
             dbMatch.setResult(match.getResult());
             dbMatch.setBuddingPlayer(match.getBuddingPlayer());
 
-            if (matchRepository.save(match) != null) {
+            ResponseEntity<String> responseEntity = validateMatchData(dbMatch);
+            if(responseEntity!=null){
+                return responseEntity;
+            }
+
+
+            if (matchRepository.save(dbMatch) != null) {
                 response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_ENDED);
                 return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
             } else {
@@ -305,9 +306,14 @@ public class MatchController {
         return null;
     }
 
-    private int getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
+    private Map getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
+        Map<String, Integer> goalMap = new HashMap<>();
         List<Goal> goals = goalRepository.findGoalsByTeamInMatch(matchId,teamId);
-        return goals.size();
+        for(Goal goal:goals){
+            Player player = playerRepository.findFirstById(goal.getPlayerId());
+            goalMap.merge(new Gson().toJson(player), 1, Integer::sum);
+        }
+        return goalMap;
     }
 
     private JsonArray getMatchResult(Iterable<Match> matches, Map<ObjectId, Team> teamTagMap){
@@ -318,17 +324,20 @@ public class MatchController {
             for(Match match : matchList) {
                 Team team1 = teamTagMap.get(match.getTeam1());
                 Team team2 = teamTagMap.get(match.getTeam2());
-
                 JsonObject matchJson = gson.fromJson(gson.toJson(match), JsonObject.class);
-                matchJson.addProperty("team1Name", team1.getName());
-                matchJson.addProperty("team2Name", team2.getName());
-                if (match.getStatus().equals(MatchStatus.COMPLETED)) {
-                    Player mom = this.playerRepository.findFirstById(match.getMom());
-                    Player buddingPlayer = this.playerRepository.findFirstById(match.getBuddingPlayer());
-                    matchJson.addProperty("team1Goal", getGoalsByTeamInMatch(match.getId(), match.getTeam1()));
-                    matchJson.addProperty("team2Goal", getGoalsByTeamInMatch(match.getId(), match.getTeam2()));
-                    matchJson.addProperty("momName", mom.getName());
-                    matchJson.addProperty("buddingPlayerName", buddingPlayer.getName());
+                matchJson.addProperty("team1", gson.toJson(team1));
+                matchJson.addProperty("team2", new Gson().toJson(team2));
+                if (match.getStatus().equals(MatchStatus.COMPLETED) || match.getStatus().equals(MatchStatus.LIVE_MATCH)) {
+                    matchJson.addProperty("team1Scorers", getGoalsByTeamInMatch(match.getId(), match.getTeam1()).toString());
+                    matchJson.addProperty("team2Scorers", getGoalsByTeamInMatch(match.getId(), match.getTeam2()).toString());
+                    if(match.getStatus().equals(MatchStatus.COMPLETED)) {
+                        Player mom = this.playerRepository.findFirstById(match.getMom());
+                        Player buddingPlayer = this.playerRepository.findFirstById(match.getBuddingPlayer());
+                        matchJson.addProperty("mom", gson.toJson(mom));
+                        if(buddingPlayer!=null) {
+                            matchJson.addProperty("buddingPlayer", gson.toJson(buddingPlayer));
+                        }
+                    }
                 }
                 resultArray.add(matchJson);
             }
