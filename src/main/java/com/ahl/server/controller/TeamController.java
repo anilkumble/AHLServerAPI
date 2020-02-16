@@ -1,6 +1,7 @@
 package com.ahl.server.controller;
 
 import com.ahl.server.AHLUtils;
+import com.ahl.server.entity.Tournament;
 import com.ahl.server.repository.PointsRepository;
 import com.ahl.server.repository.TournamentRepository;
 import com.google.gson.JsonObject;
@@ -15,6 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController()
 @RequestMapping("/api")
 public class TeamController {
@@ -27,8 +31,16 @@ public class TeamController {
     private PointsRepository pointsRepository;
 
     @GetMapping("/teams")
-    public Iterable<Team> getTeamsByTournament(@RequestParam ObjectId tournamentId) {
-        return teamRepository.findTeamsByTournament(tournamentId);
+    public Iterable<Team> getTeamsByTournament(@RequestParam Tournament tournament, String category) {
+
+        List<Team> teams = teamRepository.findTeamsByTournament(tournament.getId());
+        List<Team> teamList = new ArrayList<>();
+        for(Team team : teams){
+            if(team.getTeamTag().getCategory().equals(category)){
+                teamList.add(team);
+            }
+        }
+        return teamList;
     }
 
     @PostMapping(path = "/team", consumes = MediaType.APPLICATION_JSON_VALUE)
