@@ -44,6 +44,10 @@ public class PlayerController {
   private TeamRepository teamRepository;
   @Autowired
   private GoalRepository goalRepository;
+  @Autowired
+  private CardRepository cardRepository;
+
+
 
   @GetMapping(value = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
   public Iterable<Player> getAllPlayers(){
@@ -59,7 +63,8 @@ public class PlayerController {
       for(PlayerTeamRelation relation : relations){
         Player p = playerRepository.findFirstById(relation.getPlayerId());
         int goalCount = goalRepository.findAllGoalsByplayerId(relation.getPlayerId()).size();
-        playerResultList.add(new PlayerResult(p,goalCount,1,0,0));
+        List<Card> cards = this.cardRepository.findCardsByplayerId(p.getId());
+        playerResultList.add(new PlayerResult(p,goalCount,cards));
       }
       return new ResponseEntity<Object>(playerResultList, null, HttpStatus.INTERNAL_SERVER_ERROR);
     }else{

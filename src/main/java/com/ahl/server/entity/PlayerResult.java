@@ -1,21 +1,18 @@
 package com.ahl.server.entity;
 
+import java.util.List;
 import java.util.StringJoiner;
 
 public class PlayerResult {
 
     Player player;
     int goalScored;
-    int greenCard;
-    int yellowCard;
-    int redCard;
+    List<Card> cards;
 
-    public PlayerResult(Player player, int goalScored, int greenCard, int yellowCard, int redCard) {
+    public PlayerResult(Player player, int goalScored, List<Card> cards) {
         this.player = player;
         this.goalScored = goalScored;
-        this.greenCard = greenCard;
-        this.yellowCard = yellowCard;
-        this.redCard = redCard;
+        this.cards = cards;
     }
 
     public Player getPlayer() {
@@ -34,28 +31,12 @@ public class PlayerResult {
         this.goalScored = goalScored;
     }
 
-    public int getGreenCard() {
-        return greenCard;
+    public List<Card> getCards() {
+        return cards;
     }
 
-    public void setGreenCard(int greenCard) {
-        this.greenCard = greenCard;
-    }
-
-    public int getYellowCard() {
-        return yellowCard;
-    }
-
-    public void setYellowCard(int yellowCard) {
-        this.yellowCard = yellowCard;
-    }
-
-    public int getRedCard() {
-        return redCard;
-    }
-
-    public void setRedCard(int redCard) {
-        this.redCard = redCard;
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 
     @Override
@@ -63,9 +44,7 @@ public class PlayerResult {
         return new StringJoiner(", ", PlayerResult.class.getSimpleName() + "[", "]")
                 .add("player=" + player)
                 .add("goalScored=" + goalScored)
-                .add("greenCard=" + greenCard)
-                .add("yellowCard=" + yellowCard)
-                .add("redCard=" + redCard)
+                .add("cards=" + cards)
                 .toString();
     }
 }
