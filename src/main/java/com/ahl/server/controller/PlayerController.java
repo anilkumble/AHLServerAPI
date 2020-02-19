@@ -63,11 +63,11 @@ public class PlayerController {
     JsonObject response = new JsonObject();
     if(team != null) {
       List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationByTeamId(team.getId());
-      JsonObject playerResult = new JsonObject();
       for(PlayerTeamRelation relation : relations){
         Player p = playerRepository.findFirstById(relation.getPlayerId());
         int goalCount = goalRepository.findAllGoalsByplayerId(relation.getPlayerId()).size();
         List<Card> cards = this.cardRepository.findCardsByplayerId(p.getId());
+        JsonObject playerResult = new JsonObject();
         playerResult.add("player", gson.fromJson(gson.toJson(p), JsonObject.class));
         playerResult.addProperty("goals",goalCount);
         playerResult.addProperty("cards", gson.toJson(cards));
