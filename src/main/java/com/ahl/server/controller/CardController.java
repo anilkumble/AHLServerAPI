@@ -43,7 +43,9 @@ public class CardController {
                 if(AHLUtils.isPlayerExist(playerRepository,card.getPlayerId()) && AHLUtils.isMatchExist(matchRepository,card.getMatchId()))
                 {
                     ObjectId playerForTeamId=AHLUtils.getCurrentTeamByPlayer(playerTeamRepository,teamRepository,tournamentRepository,card.getPlayerId());
+                    ObjectId tournamentId=matchRepository.findFirstById(card.getMatchId()).getTournamentId();
                     card.setForTeamId(playerForTeamId);
+                    card.setTournamentId(tournamentId);
                     if(this.cardRepository.save(card)!=null)
                     {
                         response.addProperty(AHLConstants.SUCCESS, AHLConstants.CARD_CREATED);
