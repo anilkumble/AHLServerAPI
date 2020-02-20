@@ -115,6 +115,8 @@ public class CardController {
                         oldCard.setCardType(card.getCardType());
                         oldCard.setPlayerId(card.getPlayerId());
                         oldCard.setMatchId(card.getMatchId());
+                        ObjectId tournamentId=matchRepository.findFirstById(card.getMatchId()).getTournamentId();
+                        oldCard.setTournamentId(tournamentId);
                         if(this.cardRepository.save(oldCard)!=null)
                         {
                             response.addProperty(AHLConstants.SUCCESS, AHLConstants.CARD_UPDATED);
