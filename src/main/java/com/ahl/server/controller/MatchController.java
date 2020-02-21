@@ -116,7 +116,6 @@ public class MatchController {
                 Match.validateMatch(oldMatch);
                 if (AHLUtils.isTeamExist(teamRepository, match.getTeam1()) && AHLUtils.isTeamExist(teamRepository, match.getTeam2())
                         && AHLUtils.isTournamentExist(tournamentRepository, match.getTournamentId()) && !match.getTeam2().equals(match.getTeam1())
-                        && ObjectUtils.isEmpty(match.getResult())
                 ){
                     this.matchRepository.save(oldMatch);
                     response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_UPDATED);

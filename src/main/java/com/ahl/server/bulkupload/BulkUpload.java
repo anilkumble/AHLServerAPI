@@ -44,7 +44,7 @@ public class BulkUpload {
 
     private static  String GET_CURRENT_TOURNAMENT = "/api/tournament?season="+season+"&type=AHL";
 
-    private static String GET_CURRENT_TEAMS = "/api/teams?tournamentId=";
+    private static String GET_CURRENT_TEAMS = "/api/teams?tournament=";
 
     private static String CREATE_PLAYER = "/api/bulk/player";
 
@@ -256,7 +256,7 @@ public class BulkUpload {
     private static void setTeamMap(ObjectId tournamentId) throws Exception{
 
         System.out.println("Fetching all teams for current tournament");
-        GET_CURRENT_TEAMS+=tournamentId;
+        GET_CURRENT_TEAMS+=tournamentId+"&category=all";
         Type founderListType = new TypeToken<ArrayList<Team>>(){}.getType();
         ArrayList<Team> teamList = gson.fromJson(doGET(GET_CURRENT_TEAMS), founderListType);
         System.out.println("Team info - "+teamList);
@@ -361,7 +361,7 @@ public class BulkUpload {
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
         int responseCode = con.getResponseCode();
-        System.out.println("GET Response Code :: " + responseCode + " for URI :: "+uri);
+//        System.out.println("GET Response Code :: " + responseCode + " for URI :: "+uri);
         if (responseCode == HttpURLConnection.HTTP_OK) {
             return getString(con.getInputStream());
         }else {
@@ -404,7 +404,7 @@ public class BulkUpload {
         os.close();
 
         int responseCode = con.getResponseCode();
-        System.out.println("PUT Response Code :: " + responseCode + " for URI :: "+uri);
+//        System.out.println("PUT Response Code :: " + responseCode + " for URI :: "+uri);
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             return getString(con.getInputStream());

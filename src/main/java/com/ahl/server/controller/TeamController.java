@@ -34,6 +34,9 @@ public class TeamController {
     public Iterable<Team> getTeamsByTournament(@RequestParam Tournament tournament, String category) {
 
         List<Team> teams = teamRepository.findTeamsByTournament(tournament.getId());
+        if(category.equals(AHLConstants.ALL)){
+            return teams;
+        }
         List<Team> teamList = new ArrayList<>();
         for(Team team : teams){
             if(team.getTeamTag().getCategory().equals(category)){
