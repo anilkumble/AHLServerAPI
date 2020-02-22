@@ -15,6 +15,15 @@ public class Card {
     private CardType cardType;
     private ObjectId forTeamId;
     private int time;
+    private ObjectId tournamentId;
+
+    public ObjectId getTournamentId() {
+        return tournamentId;
+    }
+
+    public void setTournamentId(ObjectId tournamentId) {
+        this.tournamentId = tournamentId;
+    }
 
     public ObjectId getForTeamId() {
         return forTeamId;
@@ -23,7 +32,6 @@ public class Card {
     public void setForTeamId(ObjectId forTeamId) {
         this.forTeamId = forTeamId;
     }
-
 
     public int getTime() {
         return time;
