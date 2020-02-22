@@ -60,18 +60,19 @@ public class GoalController {
         return null;
     }
     @RequestMapping("/topscorers/{tournamentId}")
-    public ResponseEntity<String> getTopscores(@PathVariable ObjectId tournamentId, @RequestParam String category,@RequestParam int count)
+    public ResponseEntity<String> getTopScorers(@PathVariable ObjectId tournamentId, @RequestParam String category,@RequestParam int count)
     {
         ResponseEntity response = validateCategory(category);
         if(response!=null){
             return response;
         }
         Iterable<Goal> goals=this.goalRepository.findAll();
+        Map<ObjectId, Team> teamTagMap = getTeamTagMap(tournamentId, category);
         ArrayList<ObjectId> playerList = new ArrayList<ObjectId>();
         for(Goal goal :goals)
         {
-            Team playerTeam=this.teamRepository.findFirstById(goal.getForTeamId());
-            if (category.equalsIgnoreCase(playerTeam.getTeamTag().getCategory()))
+            Team team=teamTagMap.get(goal.getForTeamId());
+            if (team!=null && category.equalsIgnoreCase(team.getTeamTag().getCategory()))
                 playerList.add(goal.getPlayerId());
         }
 
@@ -247,6 +248,21 @@ public class GoalController {
         } else {
             throw new InvalidDataException("Team not found");
         }
+    }
+
+    private Map<ObjectId, Team> getTeamTagMap(ObjectId tournamentId, String category) {
+        Iterable<Team> teams = this.teamRepository.findTeamsByTournament(tournamentId);
+        Map<ObjectId, Team> teamTagMap = new HashMap<>();
+        teams.forEach(team -> {
+            if(category.equals(AHLConstants.MEN) && team.getTeamTag().getCategory().equals(AHLConstants.MEN)) {
+                teamTagMap.put(team.getId(), team);
+            }else if(category.equals(AHLConstants.WOMEN) && team.getTeamTag().getCategory().equals(AHLConstants.WOMEN)) {
+                teamTagMap.put(team.getId(), team);
+            }else if(category.equals(AHLConstants.ALL)){
+                teamTagMap.put(team.getId(), team);
+            }
+        });
+        return teamTagMap;
     }
 
 }
