@@ -97,7 +97,7 @@ public class PlayerController {
         playerResult.addProperty("cards", gson.toJson(cards));
         playerResults.add(playerResult);
       }
-      return new ResponseEntity<String>(playerResults.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>(playerResults.toString(), null, HttpStatus.OK);
     }else{
       response.addProperty(AHLConstants.ERROR, AHLConstants.TEAM_NOT_FOUND);
       return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
