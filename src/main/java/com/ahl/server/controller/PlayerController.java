@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 
 import com.ahl.server.AHLConstants;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,8 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController()
 @RequestMapping("/api")
@@ -63,12 +63,36 @@ public class PlayerController {
     JsonObject response = new JsonObject();
     if(team != null) {
       List<PlayerTeamRelation> relations = playerTeamRepository.findAllRelationByTeamId(team.getId());
+      Map<ObjectId, Player> playerMap = new HashMap<>();
+      Map<ObjectId, List<Card>> cardMap = new HashMap<>();
+      Map<ObjectId, List<Goal>> goalMap = new HashMap<>();
+      for (Player player : this.playerRepository.findAll()) {
+        playerMap.put(player.getId(), player);
+      }
+      for (Card card : this.cardRepository.findAll()) {
+        List<Card> cardList = cardMap.get(card.getPlayerId());
+        if(cardList==null){
+          cardList = new ArrayList<>();
+        }
+        cardList.add(card);
+        cardMap.put(card.getPlayerId(), cardList);
+      }
+      for (Goal goal : this.goalRepository.findAll()) {
+        List<Goal> goalList = goalMap.get(goal.getPlayerId());
+        if(goalList==null){
+          goalList = new ArrayList<>();
+        }
+        goalList.add(goal);
+        goalMap.put(goal.getPlayerId(), goalList);
+      }
       for(PlayerTeamRelation relation : relations){
-        Player p = playerRepository.findFirstById(relation.getPlayerId());
-        int goalCount = goalRepository.findAllGoalsByplayerId(relation.getPlayerId()).size();
-        List<Card> cards = this.cardRepository.findCardsByplayerId(p.getId());
+
+        Player player = playerMap.get(relation.getPlayerId());
+        int goalCount = goalMap.get(relation.getPlayerId())!=null ? goalMap.get(relation.getPlayerId()).size() : 0;
+        List<Card> cards = cardMap.get(relation.getPlayerId())!=null ? cardMap.get(relation.getPlayerId()) : new ArrayList<>();
+
         JsonObject playerResult = new JsonObject();
-        playerResult.add("player", gson.fromJson(gson.toJson(p), JsonObject.class));
+        playerResult.add("player", gson.fromJson(gson.toJson(player), JsonObject.class));
         playerResult.addProperty("goals",goalCount);
         playerResult.addProperty("cards", gson.toJson(cards));
         playerResults.add(playerResult);
