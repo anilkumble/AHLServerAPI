@@ -16,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -107,17 +104,14 @@ public class MatchController {
     @PutMapping("/match/{oldMatch}")
     public ResponseEntity<String> editMatch(@RequestBody Match match, @PathVariable Match oldMatch) {
         JsonObject response = new JsonObject();
-        if (oldMatch != null && !match.getTeam1().equals(match.getTeam2())) {
-            oldMatch.setResult(match.getResult());
-            oldMatch.setTeam1(match.getTeam1());
-            oldMatch.setTeam2(match.getTeam2());
-            oldMatch.setTournamentId(match.getTournamentId());
+        if (oldMatch != null ) {
+            match.setId(oldMatch.getId());
             try {
-                Match.validateMatch(oldMatch);
+                Match.validateMatch(match);
                 if (AHLUtils.isTeamExist(teamRepository, match.getTeam1()) && AHLUtils.isTeamExist(teamRepository, match.getTeam2())
                         && AHLUtils.isTournamentExist(tournamentRepository, match.getTournamentId()) && !match.getTeam2().equals(match.getTeam1())
                 ){
-                    this.matchRepository.save(oldMatch);
+                    this.matchRepository.save(match);
                     response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_UPDATED);
                     return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
                 }else{
