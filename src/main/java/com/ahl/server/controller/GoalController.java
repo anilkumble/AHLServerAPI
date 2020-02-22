@@ -71,8 +71,8 @@ public class GoalController {
         ArrayList<ObjectId> playerList = new ArrayList<ObjectId>();
         for(Goal goal :goals)
         {
-            Team team=teamTagMap.get(goal.getForTeamId());
-            if (team!=null && category.equalsIgnoreCase(team.getTeamTag().getCategory()))
+            Team playerTeam=this.teamRepository.findFirstById(goal.getForTeamId());
+            if (category.equalsIgnoreCase(playerTeam.getTeamTag().getCategory()))
                 playerList.add(goal.getPlayerId());
         }
 
