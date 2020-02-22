@@ -161,7 +161,7 @@ public class MatchController {
     @PutMapping(path = "match/end/{dbMatch}")
     public ResponseEntity<String> endMatch(@PathVariable Match dbMatch, @RequestBody Match match) {
         JsonObject response = new JsonObject();
-        if(match.getMom() != null && match.getBuddingPlayer() != null && dbMatch.getStatus() == MatchStatus.LIVE_MATCH){
+        if(match.getMom() != null && dbMatch.getStatus() == MatchStatus.LIVE_MATCH){
 
             dbMatch.setStatus(MatchStatus.COMPLETED);
             dbMatch.setMom(match.getMom());
@@ -173,7 +173,6 @@ public class MatchController {
                 return responseEntity;
             }
 
-
             if (matchRepository.save(dbMatch) != null) {
                 response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_ENDED);
                 return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
@@ -183,7 +182,7 @@ public class MatchController {
             }
         }
         else{
-            response.addProperty(AHLConstants.ERROR, "Match object should have man of the match and budding player and status should be on going");
+            response.addProperty(AHLConstants.ERROR, "Match object should have man of the match and status should be ongoing");
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
     }
@@ -285,7 +284,7 @@ public class MatchController {
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
         }
 
-        if(!AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), buddingPlayer)
+        if(buddingPlayer!=null && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam1(), buddingPlayer)
                 && !AHLUtils.isPlayerExistInTeam(playerTeamRepository, match.getTeam2(), buddingPlayer)){
             response.addProperty(AHLConstants.ERROR, "Budding player not found in either of teams");
             return new ResponseEntity<String>(response.toString(),null, HttpStatus.BAD_REQUEST);
