@@ -200,8 +200,8 @@ public class MatchController {
         Map<ObjectId, Points> pointsTable = new HashMap<>();
 
         for(Match match : matches){
-            Team team1 = this.teamRepository.findFirstById(match.getTeam1());
-            Team team2 = this.teamRepository.findFirstById(match.getTeam2());
+            Team team1 = teamTagMap.get(match.getTeam1());
+            Team team2 = teamTagMap.get(match.getTeam2());
             Points team1Point = pointsTable.get(team1.getId());
             Points team2Point = pointsTable.get(team2.getId());
             if(team1Point==null){
