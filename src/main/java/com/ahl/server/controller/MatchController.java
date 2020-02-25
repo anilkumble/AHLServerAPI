@@ -298,23 +298,51 @@ public class MatchController {
         return null;
     }
 
-    private Map<String, Integer> getGoalsByTeamInMatch(ObjectId matchId, ObjectId teamId) {
+    private Map<String, Integer> getGoalsByTeamInMatch(List<Goal> matchGoals, ObjectId teamId, Map<ObjectId, Player> playerMap) {
 
         Map<ObjectId, Integer> tempGoalMap = new HashMap<>();
-
         Map<String, Integer> goalMap = new HashMap<>();
 
-        List<Goal> goals = goalRepository.findGoalsByTeamInMatch(matchId,teamId);
-        for(Goal goal:goals){
-            tempGoalMap.merge(goal.getPlayerId(), 1, Integer::sum);
-        }
-        for(ObjectId playerId : tempGoalMap.keySet()){
-            goalMap.put(new Gson().toJson(this.playerRepository.findFirstById(playerId)), tempGoalMap.get(playerId));
+        List<Goal> teamGoals = new ArrayList<>();
+        if(matchGoals!=null) {
+            for (Goal matchGoal : matchGoals) {
+                if (matchGoal.getForTeamId().equals(teamId)) {
+                    teamGoals.add(matchGoal);
+                }
+            }
+            for (Goal goal : teamGoals) {
+                tempGoalMap.merge(goal.getPlayerId(), 1, Integer::sum);
+            }
+            for (ObjectId playerId : tempGoalMap.keySet()) {
+                goalMap.put(new Gson().toJson(playerMap.get(playerId)), tempGoalMap.get(playerId));
+            }
         }
         return goalMap;
     }
 
     private JsonArray getMatchResult(Iterable<Match> matches, Map<ObjectId, Team> teamTagMap){
+
+        Map<ObjectId, Player> playerMap = new HashMap<>();
+        Map<ObjectId, List<Goal>> goalMatchMap = new HashMap<>();
+
+        Iterator<Player> playerIterator = this.playerRepository.findAll().iterator();
+        while (playerIterator.hasNext()) {
+            Player player = playerIterator.next();
+            playerMap.put(player.getId(), player);
+        }
+
+        Iterator<Goal> goalIterator = this.goalRepository.findAll().iterator();
+
+        while (goalIterator.hasNext()) {
+            Goal goal = goalIterator.next();
+            List<Goal> goalList = goalMatchMap.get(goal.getMatchId());
+            if(goalList==null){
+                goalList = new ArrayList<>();
+            }
+            goalList.add(goal);
+            goalMatchMap.put(goal.getMatchId(), goalList);
+        }
+
         JsonArray resultArray = new JsonArray();
         Gson gson = new Gson();
         List<Match> matchList = getMatchesByCategory(matches, teamTagMap);
@@ -326,11 +354,11 @@ public class MatchController {
                 matchJson.add("team1",gson.fromJson(gson.toJson(team1), JsonObject.class));
                 matchJson.add("team2", gson.fromJson(gson.toJson(team2), JsonObject.class));
                 if (match.getStatus().equals(MatchStatus.COMPLETED) || match.getStatus().equals(MatchStatus.LIVE_MATCH)) {
-                    matchJson.add("team1Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(match.getId(), match.getTeam1())), JsonObject.class));
-                    matchJson.add("team2Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(match.getId(), match.getTeam2())), JsonObject.class));
+                    matchJson.add("team1Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(goalMatchMap.get(match.getId()), match.getTeam1(), playerMap)), JsonObject.class));
+                    matchJson.add("team2Scorers", gson.fromJson(gson.toJson(getGoalsByTeamInMatch(goalMatchMap.get(match.getId()), match.getTeam2(), playerMap)), JsonObject.class));
                     if(match.getStatus().equals(MatchStatus.COMPLETED)) {
-                        Player mom = this.playerRepository.findFirstById(match.getMom());
-                        Player buddingPlayer = this.playerRepository.findFirstById(match.getBuddingPlayer());
+                        Player mom = playerMap.get(match.getMom());
+                        Player buddingPlayer = playerMap.get(match.getBuddingPlayer());
                         matchJson.add("mom", gson.fromJson(gson.toJson(mom), JsonObject.class));
                         if(buddingPlayer!=null) {
                             matchJson.add("buddingPlayer", gson.fromJson(gson.toJson(buddingPlayer), JsonObject.class));
