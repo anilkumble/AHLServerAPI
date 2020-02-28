@@ -13,6 +13,9 @@ public interface GoalRepository extends CrudRepository<Goal, ObjectId> {
 
     public Goal findFirstById(ObjectId goalId);
 
+    @Query(value = "{ 'tournamentId': ?0, 'playerId' : ?1}")
+    public List<Goal> findFirstByIdAndTournamentId(ObjectId tournamentId, ObjectId playerId);
+
     @Query(value = "{ 'playerId' : ?0}")
     public List<Goal> findAllGoalsByplayerId(ObjectId id);
 

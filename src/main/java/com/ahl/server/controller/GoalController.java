@@ -100,13 +100,12 @@ public class GoalController {
             JsonObject goalObject=new JsonObject();
             Gson gson = new Gson();
             Player player = this.playerRepository.findFirstById(entry.getKey());
-            JsonObject playerJson = gson.fromJson(gson.toJson(player), JsonObject.class);
-            List<Goal> player_goal=this.goalRepository.findAllGoalsByplayerId(player.getId());
-            Team playerTeam=teamTagMap.get(player_goal.get(0).getForTeamId());
-            String teamName=this.teamRepository.findFirstById(playerTeam.getId()).getName();
+            JsonObject playerJson   =   gson.fromJson(gson.toJson(player), JsonObject.class);
+            List<Goal> player_goal  =   this.goalRepository.findFirstByIdAndTournamentId(tournamentId, player.getId());
+            JsonObject teamJson     =   gson.fromJson(gson.toJson(teamTagMap.get(player_goal.get(0).getForTeamId())), JsonObject.class);
             goalObject.add("player", playerJson);
+            goalObject.add("team", teamJson);
             goalObject.addProperty("goals",entry.getValue());
-            goalObject.addProperty("Player_Team",teamName);
             if(entry.getValue()!=previous_value){
                 previous_value=entry.getValue();
                 result++;
