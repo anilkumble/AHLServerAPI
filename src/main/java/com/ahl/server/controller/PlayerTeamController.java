@@ -13,9 +13,11 @@ import com.google.gson.JsonObject;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -29,6 +31,11 @@ public class PlayerTeamController {
     private TeamRepository teamRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
+
+    @GetMapping(value = "/relations", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Iterator<PlayerTeamRelation> getAllRelations(){
+        return  playerTeamRepository.findAll().iterator();
+    }
 
     @PostMapping(path = "/player-relation")
     public ResponseEntity<String> addPlayerTeamRelation(@RequestBody PlayerTeamRelation playerTeamRelation)
