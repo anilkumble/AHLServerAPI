@@ -131,10 +131,14 @@ public class GoalController {
                     goal.setTournamentId(tournamentId);
                     goal.setForTeamId(forTeamId);
                     goal.setAgainstTeamId(againstTeamId);
-                    if(this.goalRepository.save(goal)!=null)
+
+                    Goal newGoal = this.goalRepository.save(goal);
+                    if(newGoal != null)
                     {
-                        response.addProperty(AHLConstants.SUCCESS, AHLConstants.GOAL_CREATED);
-                        return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                        Gson gson = new Gson();
+                        JsonObject goalResponse = gson.fromJson(gson.toJson(newGoal), JsonObject.class);
+                        goalResponse.add("player", gson.fromJson(gson.toJson(playerRepository.findFirstById(goal.getPlayerId())), JsonObject.class));
+                        return new ResponseEntity<String>(goalResponse.toString(), null, HttpStatus.OK);
                     }
                     else{
                         response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);

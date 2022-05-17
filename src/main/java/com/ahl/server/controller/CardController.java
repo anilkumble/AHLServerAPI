@@ -5,6 +5,7 @@ import com.ahl.server.AHLUtils;
 import com.ahl.server.entity.Card;
 import com.ahl.server.enums.CardType;
 import com.ahl.server.repository.*;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.bson.types.ObjectId;
@@ -46,10 +47,14 @@ public class CardController {
                     ObjectId tournamentId=matchRepository.findFirstById(card.getMatchId()).getTournamentId();
                     card.setForTeamId(playerForTeamId);
                     card.setTournamentId(tournamentId);
-                    if(this.cardRepository.save(card)!=null)
+
+                    Card newCard = this.cardRepository.save(card);
+                    if(card != null)
                     {
-                        response.addProperty(AHLConstants.SUCCESS, AHLConstants.CARD_CREATED);
-                        return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
+                        Gson gson = new Gson();
+                        JsonObject cardResponse = gson.fromJson(gson.toJson(newCard), JsonObject.class);
+                        cardResponse.add("player", gson.fromJson(gson.toJson(playerRepository.findFirstById(card.getPlayerId())), JsonObject.class));
+                        return new ResponseEntity<String>(cardResponse.toString(), null, HttpStatus.OK);
                     }
                     else{
                         response.addProperty(AHLConstants.ERROR, AHLConstants.ERROR_MSG);

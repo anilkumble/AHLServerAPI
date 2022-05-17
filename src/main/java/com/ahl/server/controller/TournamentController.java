@@ -24,6 +24,7 @@ public class TournamentController {
 
   @GetMapping("/tournament")
   public Tournament getTournament(@RequestParam String season, @RequestParam String type){
+    System.out.println("values: " +season + " " + type);
     return tournamentRepository.findLiveTournament(season, type).iterator().next();
   }
 

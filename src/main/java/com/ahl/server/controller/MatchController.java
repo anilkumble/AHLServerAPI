@@ -69,10 +69,10 @@ public class MatchController {
         try {
             Match.validateMatch(match);
             long matchDate = match.getMatchDateTime();
-            if(!AHLUtils.isFutureDate(matchDate)) {
-                response.addProperty(AHLConstants.ERROR, "Date is not valid " + matchDate);
-                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+//            if(!AHLUtils.isFutureDate(matchDate)) {
+//                response.addProperty(AHLConstants.ERROR, "Date is not valid " + matchDate);
+//                return new ResponseEntity<String>(response.toString(), null, HttpStatus.INTERNAL_SERVER_ERROR);
+//            }
             Team team1 = this.teamRepository.findFirstById(match.getTeam1());
             Team team2 = this.teamRepository.findFirstById(match.getTeam2());
 
@@ -83,7 +83,12 @@ public class MatchController {
                     && !ObjectUtils.isEmpty(match.getResult())
                     && team1.getTeamTag().getCategory().equals(team2.getTeamTag().getCategory())
             ) {
-                match.setStatus(MatchStatus.UPCOMING);
+
+                if(System.currentTimeMillis() > matchDate){
+                    match.setStatus(MatchStatus.COMPLETED);
+                }else{
+                    match.setStatus(MatchStatus.UPCOMING);
+                }
                 if (this.matchRepository.save(match) != null) {
                     response.addProperty(AHLConstants.SUCCESS, AHLConstants.MATCH_CREATED);
                     return new ResponseEntity<String>(response.toString(), null, HttpStatus.OK);
@@ -269,6 +274,26 @@ public class MatchController {
     private int getGoalsAgainstByTeamId(@PathVariable ObjectId teamId) {
         List<Goal> goals = goalRepository.findGoalsAgainstByTeamId(teamId);
         return goals.size();
+    }
+
+    @GetMapping("/match/{matchId}")
+    public ResponseEntity<String> getMatchByID(@PathVariable ObjectId matchId){
+
+        Match match = matchRepository.findFirstById(matchId);
+        Gson gson = new Gson();
+
+        Team team1 = teamRepository.findFirstById(match.getTeam1());
+        Team team2 = teamRepository.findFirstById(match.getTeam2());
+
+        JsonObject matchResponse = gson.fromJson(gson.toJson(match), JsonObject.class);
+        matchResponse.add("team1",
+                gson.fromJson(
+                gson.toJson(team1), JsonObject.class));
+        matchResponse.add("team2",
+                gson.fromJson(
+                        gson.toJson(team2), JsonObject.class));
+
+        return new ResponseEntity<String>(matchResponse.toString(), null, HttpStatus.OK) ;
     }
 
     private ResponseEntity<String> validateMatchData(Match match) {

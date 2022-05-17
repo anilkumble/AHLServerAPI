@@ -81,4 +81,11 @@ public class TeamController {
         }
     }
 
+    @GetMapping(path = "/team/{teamId}")
+    public ResponseEntity<Team> getTeamByID(@PathVariable ObjectId teamId){
+
+        Team team = teamRepository.findFirstById(teamId);
+        return new ResponseEntity<>(team, null, HttpStatus.OK);
+    }
+
 }

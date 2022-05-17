@@ -3,11 +3,8 @@ package com.ahl.server.repository;
 import com.ahl.server.entity.Match;
 import com.ahl.server.enums.MatchStatus;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-
-import java.util.List;
 
 public interface MatchRepository extends CrudRepository<Match,ObjectId> {
 

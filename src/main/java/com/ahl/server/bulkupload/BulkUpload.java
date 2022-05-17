@@ -18,6 +18,7 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -371,9 +372,11 @@ public class BulkUpload {
 
     private static String doPOST(String uri, String payLoad) throws Exception {
         URL obj = new URL(uri);
+        String encoded = Base64.getEncoder().encodeToString(("ahl2020"+":"+"ahlserver@bala").getBytes(StandardCharsets.UTF_8));  //Java 8
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Authorization", "Basic "+encoded);
 
         con.setDoOutput(true);
         OutputStream os = con.getOutputStream();

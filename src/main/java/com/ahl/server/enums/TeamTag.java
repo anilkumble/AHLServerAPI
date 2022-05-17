@@ -30,7 +30,13 @@ public enum TeamTag {
 
     M_BLACK(13, -1, AHLConstants.MEN),
 
-    Other(14, -1, AHLConstants.OTHER);
+    Other(14, -1, AHLConstants.OTHER),
+
+    W_RANGERS(15, 7, AHLConstants.WOMEN),
+
+    W_FLICKERS(16, 8, AHLConstants.WOMEN),
+
+    W_SMASHING(17, 9, AHLConstants.WOMEN);
 
 
     private int teamTagId;
